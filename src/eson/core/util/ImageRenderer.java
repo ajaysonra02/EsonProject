@@ -26,10 +26,10 @@ import javax.swing.ImageIcon;
 public class ImageRenderer extends GaussianFilter{
     
     public BufferedImage toBufferedImage(Image img){
-        if(img instanceof BufferedImage){
-            return (BufferedImage)img;
+        if(img instanceof BufferedImage bufferedImage){
+            return bufferedImage;
         }else{
-            BufferedImage buffImage = new BufferedImage(img.getWidth(null),img.getHeight(null),BufferedImage.TYPE_INT_ARGB);
+            var buffImage = new BufferedImage(img.getWidth(null),img.getHeight(null),BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2d = buffImage.createGraphics();
             g2d.drawImage(img, 0, 0, null);
             g2d.dispose();

@@ -40,7 +40,7 @@ public class EsonTableHolder extends Exception{
         this.table = table;
     }
     
-    protected List<TableViewWorker> viewWorkers = new ArrayList();
+    protected List<TableViewWorker> viewWorkers = new ArrayList<>();
     protected void viewPage(List<Object[]> values,int pageNumber){
         pageNumber--;
         resetRows();
@@ -80,7 +80,7 @@ public class EsonTableHolder extends Exception{
     }
     
     protected String SEARCH_KEY = "";
-    protected List<SearchWorker> searchWorkers = new ArrayList();
+    protected List<SearchWorker> searchWorkers = new ArrayList<>();
     protected void search(String KEY){
         if(!KEY.trim().equals(SEARCH_KEY)){
             resetRows();
@@ -111,7 +111,7 @@ public class EsonTableHolder extends Exception{
             table.setActionEnabled(false);
             for(Object[] obj:searchResult){
                 if(STOP){ resetRows(); break; }
-                if(!insertRow(obj)){break;}; 
+                if(!insertRow(obj)){break;}
             }
             table.refreshViewPort();
             table.scrollToTop();
@@ -122,7 +122,7 @@ public class EsonTableHolder extends Exception{
         }
     }
     
-    protected List<TableSorter> tableSorters = new ArrayList();
+    protected List<TableSorter> tableSorters = new ArrayList<>();
     protected void sort(int columnIndex, boolean ascending){
         changeScrollSize(table.SCROLL_MIN_SIZE);
         EsonSearch esonSearch = table.getEsonSearch();
@@ -212,8 +212,10 @@ public class EsonTableHolder extends Exception{
             return Float.compare((float)a, (float)b);
         }else if(a instanceof Date date){
             return date.compareTo((Date)b);
-        }else{
+        }else if(a instanceof String){
             return a.toString().compareToIgnoreCase(b.toString());
+        }else{
+            return -1;
         }
     }
     

@@ -156,10 +156,10 @@ public class JTableCellRenderer extends DefaultTableCellRenderer{
     private void checkAlignment(JLabel c, Object value){
         if(value instanceof String){
             switch(HORIZONTAL_ALIGNMENT){
-                case JLabel.LEADING: checkText("     "+value,c); break;
-                case JLabel.LEFT: checkText("     "+value,c); break;
-                case JLabel.TRAILING: checkText(value+"     ",c); break;
-                case JLabel.RIGHT: checkText(value+"     ",c); break;
+                case JLabel.LEADING -> checkText("     "+value,c);
+                case JLabel.LEFT -> checkText("     "+value,c);
+                case JLabel.TRAILING -> checkText(value+"     ",c);
+                case JLabel.RIGHT -> checkText(value+"     ",c);
             }
         }
         c.setHorizontalAlignment(HORIZONTAL_ALIGNMENT);
@@ -175,17 +175,13 @@ public class JTableCellRenderer extends DefaultTableCellRenderer{
                     text = new DecimalFormat(numberFormat).format(Double.parseDouble(value.toString()));
                 }
                 switch(STRING_TYPE){
-                    case CAPITALIZE: 
+                    case CAPITALIZE -> { 
                         if(stringUtils==null){c.setText(new StringUtils().capitalize(text));
                         }else{c.setText(stringUtils.capitalize(text));}
-                        break;
-                    case UPPERCASE_ALL: 
-                        c.setText(text.toUpperCase());
-                        break;
-                    case LOWERCASE_ALL:
-                        c.setText(text.toLowerCase());
-                        break;
-                    default: c.setText(text); break;
+                    }
+                    case UPPERCASE_ALL -> c.setText(text.toUpperCase());
+                    case LOWERCASE_ALL -> c.setText(text.toLowerCase());
+                    default -> c.setText(text);
                 }
             }
         }else{c.setText("");}
@@ -195,7 +191,7 @@ public class JTableCellRenderer extends DefaultTableCellRenderer{
     }
     
     private boolean isDouble(String text){
-        try{Double.parseDouble(text);return true;}catch(Exception e){return false;}
+        try{Double.valueOf(text);return true;}catch(NumberFormatException e){return false;}
     }
     
     private void checkCase(Object value, JLabel c){

@@ -69,7 +69,7 @@ public class EsonComboButton extends javax.swing.JPanel {
     private float SHADOW_OPACITY = 0.5f;
     private ImageRenderer RENDERER = null;
     private Image DROP_ICON = null;
-    private List<String> VALUES = new ArrayList();
+    private List<String> VALUES = new ArrayList<>();
     
     public EsonComboButton() {
         initComponents();
@@ -482,7 +482,7 @@ public class EsonComboButton extends javax.swing.JPanel {
         viewWorkers.add(worker);
     }
     
-    private List<DropViewWorker> viewWorkers = new ArrayList();
+    private List<DropViewWorker> viewWorkers = new ArrayList<>();
     private class DropViewWorker extends SwingWorker{
         
         private boolean STOP = false;

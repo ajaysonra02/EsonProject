@@ -19,8 +19,7 @@ public class JTableHeaderRenderer extends DefaultTableCellRenderer{
     
     private Color BACKGROUND = null;
     private Color FOREGROUND = null;
-    private Color GRID = null;
-    private int HEIGHT = 25;
+    private int CELL_HEIGHT = 25;
     private Font FONT = null;
     private CellVerticalAlignment ALIGNMENT = CellVerticalAlignment.CENTER;
     
@@ -31,23 +30,20 @@ public class JTableHeaderRenderer extends DefaultTableCellRenderer{
     public JTableHeaderRenderer(Color background, Color foreground, Color grid, int height){
         BACKGROUND = background;
         FOREGROUND = foreground;
-        GRID = grid;
-        HEIGHT = height;
+        CELL_HEIGHT = height;
     }
     
     public JTableHeaderRenderer(Color background, Color foreground, Color grid, int height, Font font){
         BACKGROUND = background;
         FOREGROUND = foreground;
-        GRID = grid;
-        HEIGHT = height;
+        CELL_HEIGHT = height;
         FONT = font;
     }
     
     public JTableHeaderRenderer(Color background, Color foreground, Color grid, int height, CellVerticalAlignment align){
         BACKGROUND = background;
         FOREGROUND = foreground;
-        GRID = grid;
-        HEIGHT = height;
+        CELL_HEIGHT = height;
         ALIGNMENT = align;
     }
     
@@ -60,15 +56,15 @@ public class JTableHeaderRenderer extends DefaultTableCellRenderer{
         setHorizontalAlignment(JLabel.CENTER);
         int vAlignment = JLabel.CENTER;
         switch(ALIGNMENT){
-            case TOP: vAlignment = JLabel.TOP; break;
-            case BOTTOM: vAlignment = JLabel.BOTTOM; break;
-            case CENTER: vAlignment = JLabel.CENTER; break;
+            case TOP -> vAlignment = JLabel.TOP;
+            case BOTTOM -> vAlignment = JLabel.BOTTOM;
+            case CENTER -> vAlignment = JLabel.CENTER;
         }
         if(FONT!=null){
             setFont(FONT);
         }
         setVerticalAlignment(vAlignment);
-        setPreferredSize(new Dimension(getPreferredSize().width,HEIGHT));
+        setPreferredSize(new Dimension(getPreferredSize().width,CELL_HEIGHT));
         return c;
     }
     

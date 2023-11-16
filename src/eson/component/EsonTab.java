@@ -19,7 +19,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
-import eson.core.EsonUI;
 import eson.core.util.ImageRenderer;
 
 /**
@@ -74,19 +73,16 @@ public class EsonTab extends javax.swing.JPanel {
     private int TAB_ICON_TEXT_GAP = 8;
     private int DROP_ICON_SIZE = 11;
     private int DROP_ICON_TEXT_GAP = 8;
-    private MouseEvent MOUSE_EVENT = null;
     private Component DROP_DOWN_CONTAINER = null;
-    private JPanel BLUR_PANEL = new JPanel(), DES_PANEL = null;
+    protected JPanel BLUR_PANEL = new JPanel(), DES_PANEL = null;
     private ImageIcon DROP_ITEM_ICON = null;
     private ImageRenderer RENDERER = null;
-    private EsonUI esonUI = null;
     
     public EsonTab() {
         this(new String[]{"Tab1","Tab2","Tab3","Tab4","Tab5"});
     }
     
     public EsonTab(String[] tabNames){
-        esonUI = new EsonUI();
         RENDERER = new ImageRenderer();
         TAB_NAMES = tabNames;
         DROP_ITEM_ICON = new javax.swing.ImageIcon(getClass().getResource("/json/asidera/images/drop_item_icon.png"));
@@ -745,8 +741,7 @@ public class EsonTab extends javax.swing.JPanel {
     }
     
     private void closeDrop(DropDown t){
-        if (DROP_DOWN_CONTAINER instanceof JPanel) {
-            JPanel pane = (JPanel) DROP_DOWN_CONTAINER;
+        if (DROP_DOWN_CONTAINER instanceof JPanel pane) {
             t.setVisible(false);
             pane.remove(t);
             BLUR_PANEL.setVisible(false);
@@ -764,7 +759,6 @@ public class EsonTab extends javax.swing.JPanel {
     public class TabColumn extends javax.swing.JPanel{
         
         private javax.swing.JSeparator separator = null;
-        private javax.swing.JPanel nav = null;
         private javax.swing.JLabel label = null;
         private boolean isSelected = false;
         private boolean isActionEnabled = false;
@@ -776,7 +770,6 @@ public class EsonTab extends javax.swing.JPanel {
             INDEX = index;
             DROP_MENU = new DropDown();
             ICON = null;
-            nav = parent;
             label = new javax.swing.JLabel(name);
             separator = new javax.swing.JSeparator(JSeparator.HORIZONTAL);
             initTabColumn();
@@ -793,7 +786,7 @@ public class EsonTab extends javax.swing.JPanel {
             return ICON;
         }
         
-        public DropDown getDropDown(){
+        protected DropDown getDropDown(){
             return DROP_MENU;
         }
         
@@ -805,29 +798,24 @@ public class EsonTab extends javax.swing.JPanel {
         private void initListeners(){
             addMouseListener(new MouseListener() {
                 @Override public void mouseClicked(MouseEvent e) {
-                    MOUSE_EVENT = e;
                     /*Do Nothing*/
                 }
                 @Override public void mousePressed(MouseEvent e) { 
-                    MOUSE_EVENT = e;
                     if(e.getButton()==1 && isActionEnabled){
                         pressed();
                     }
                 }
                 @Override public void mouseEntered(MouseEvent e) { 
-                     MOUSE_EVENT = e;
                      if(isActionEnabled && !DROP_MENU.isShowing()){
                          hover();
                      }
                 }
                 @Override public void mouseExited(MouseEvent e) {
-                    MOUSE_EVENT = e;
                     if(isActionEnabled && !DROP_MENU.isShowing()){
                         exited();
                     }
                 }
                 @Override public void mouseReleased(MouseEvent e) { 
-                    MOUSE_EVENT = e;
                     DES_PANEL.requestFocus();
                     if(e.getButton()==1 && isActionEnabled){
                         if (DROP_MENU.getDropMenuItems() != null) {
@@ -871,8 +859,7 @@ public class EsonTab extends javax.swing.JPanel {
             DROP_MENU.setSize(w, h * count +5);
             DROP_MENU.setLocation(getX(),DROP_DOWN_Y_LOCATION);
             DROP_MENU.setOpaque(false);
-            if (DROP_DOWN_CONTAINER instanceof JPanel) {
-                JPanel pane = (JPanel) DROP_DOWN_CONTAINER;
+            if (DROP_DOWN_CONTAINER instanceof JPanel pane) {
                 pane.add(BLUR_PANEL,0);
                 BLUR_PANEL.setVisible(true);
                 panelUpdate(BLUR_PANEL);

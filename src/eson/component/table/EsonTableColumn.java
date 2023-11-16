@@ -27,7 +27,6 @@ public class EsonTableColumn extends JPanel {
     private int HORIZONTAL_ALIGNMENT = javax.swing.SwingConstants.CENTER;
     private Color FOREGROUND = new Color(255,255,255);
     private JLabel label = new JLabel();
-    private EsonButton button = new EsonButton();
     private Component COMPONENT = label;
     private EsonTableRow TABLE_ROW = null;
     private EsonTable TABLE = null;
@@ -146,8 +145,8 @@ public class EsonTableColumn extends JPanel {
             setComponentAsLabel(OBJECT.toString());
         } else if (OBJECT instanceof Byte) {
             setComponentAsLabel(OBJECT.toString());
-        } else if (OBJECT instanceof EsonButton) {
-            COMPONENT = (EsonButton)OBJECT;
+        } else if (OBJECT instanceof EsonButton esonButton) {
+            COMPONENT = esonButton;
         }
         refresh();
     }
@@ -161,13 +160,12 @@ public class EsonTableColumn extends JPanel {
     }
     
     private void refresh(){
-        if(COMPONENT instanceof JLabel){
-            JLabel label = (JLabel)COMPONENT;
-            label.setText(VALUE);
-            label.setHorizontalAlignment(HORIZONTAL_ALIGNMENT); 
-            label.setFont(FONT);
-            label.setForeground(FOREGROUND);
-            label.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 6, 0, 6));
+        if(COMPONENT instanceof JLabel lbl){
+            lbl.setText(VALUE);
+            lbl.setHorizontalAlignment(HORIZONTAL_ALIGNMENT); 
+            lbl.setFont(FONT);
+            lbl.setForeground(FOREGROUND);
+            lbl.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 6, 0, 6));
         } 
     }  
     

@@ -275,7 +275,7 @@ public class EsonProgress extends javax.swing.JPanel {
     private Color background_color = new java.awt.Color(240,240,240);
     private Color foreground_color = new java.awt.Color(51,153,255);
     private Font stringFont = new java.awt.Font("SansSerif", 0, 12);
-    private javax.swing.Timer animTimer = new javax.swing.Timer(20, new ActionListener() {
+    protected javax.swing.Timer animTimer = new javax.swing.Timer(20, new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {

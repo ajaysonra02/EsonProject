@@ -5,10 +5,18 @@
  */
 package eson.core.util;
 
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Base64;
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -23,12 +31,12 @@ public class EsonCrypt {
     private Cipher ecipher;
     private Cipher dcipher;
     // 8-byte Salt
-    private byte[] salt = {
+    protected byte[] salt = {
         (byte) 0xA9, (byte) 0x9B, (byte) 0xC8, (byte) 0x32,
         (byte) 0x56, (byte) 0x35, (byte) 0xE3, (byte) 0x03
     };
     // Iteration count
-    private int iterationCount = 19;
+    protected int iterationCount = 19;
 
     /**
      *
@@ -52,7 +60,7 @@ public class EsonCrypt {
             byte[] out = ecipher.doFinal(in);
             String encStr = new String(Base64.getEncoder().encode(out));
             return encStr;
-        }catch(Exception ex){
+        }catch(UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
             System.err.println("ESONCRYPT ENCRYPTION ERROR: "+ex.getMessage());
             return null;
         }
@@ -78,7 +86,7 @@ public class EsonCrypt {
             String charSet = "UTF-8";
             String plainStr = new String(utf8, charSet);
             return plainStr;
-        }catch(Exception ex){
+        }catch(UnsupportedEncodingException | InvalidAlgorithmParameterException | InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException ex){
             System.err.println("ESONCRYPT DECRYPTION ERROR: "+ex.getMessage());
             return null;
         }

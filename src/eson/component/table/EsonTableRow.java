@@ -9,7 +9,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import javax.swing.border.MatteBorder;
 import eson.core.EsonProject;
 import eson.core.util.GaussianFilter;
@@ -28,23 +26,23 @@ import eson.core.util.GaussianFilter;
  */
 public class EsonTableRow extends JPanel {
     
-    private EsonTableColumn ESON_COLUMNS[] = null;
-    private Color H_FOREGROUND = null,
+    protected EsonTableColumn ESON_COLUMNS[] = null;
+    protected Color H_FOREGROUND = null,
             H_BACKGROUND = null,
             S_BACKGROUND = null,
             S_FOREGROUND = null,
             N_FOREGROUND = null,
             N_BACKGROUND = null;
-    private boolean isSelected = false;
-    private int ROW_HEIGHT = 2;
-    private List<Integer> COLUMN_WIDTHS = new ArrayList();
-    private List<Boolean> RESIZABLE_COLUMNS = new ArrayList();
-    private List<Boolean> VISIBLE_COLUMNS = new ArrayList();
-    private List<Integer> COLUMN_ALIGNMENT = new ArrayList();
-    private boolean isHeader = false;
-    private EsonTable TABLE = null;
-    private Font FONT = null;
-    private EsonTableColumn MARGIN = null;
+    protected boolean isSelected = false;
+    protected int ROW_HEIGHT = 2;
+    protected List<Integer> COLUMN_WIDTHS = new ArrayList<>();
+    protected List<Boolean> RESIZABLE_COLUMNS = new ArrayList<>();
+    protected List<Boolean> VISIBLE_COLUMNS = new ArrayList<>();
+    protected List<Integer> COLUMN_ALIGNMENT = new ArrayList<>();
+    protected boolean isHeader = false;
+    protected EsonTable TABLE = null;
+    protected Font FONT = null;
+    protected EsonTableColumn MARGIN = null;
     
     public EsonTableRow(EsonTable esonTable, List<Object[]> esonColumn, int rowHeight, boolean isHeader){
         TABLE = esonTable;
@@ -52,21 +50,11 @@ public class EsonTableRow extends JPanel {
         ROW_HEIGHT = rowHeight;
         
         ESON_COLUMNS = new EsonTableColumn[esonColumn.size()];
-        boolean hasResizableColumn = false;
         for(Object[] obj:esonColumn){
-            if(!hasResizableColumn && (boolean)obj[2] && (boolean)obj[4]){
-                hasResizableColumn = true;
-            }
             COLUMN_WIDTHS.add((int)obj[1]);
             RESIZABLE_COLUMNS.add((boolean)obj[2]);
             COLUMN_ALIGNMENT.add((int)obj[3]);
             VISIBLE_COLUMNS.add((boolean)obj[4]);
-        }
-        if(!hasResizableColumn){
-            RESIZABLE_COLUMNS.clear();
-            for (Integer COLUMN_WIDTHS1 : COLUMN_WIDTHS) {
-                RESIZABLE_COLUMNS.add(true);
-            }
         }
         setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
         initColumns();
@@ -115,7 +103,6 @@ public class EsonTableRow extends JPanel {
                 TABLE.resetSelection();
                 isSelected = true;
                 changeColor(S_BACKGROUND, S_FOREGROUND);
-                EXITED = false;
             } else {
                 isSelected = false;
                 changeColor(N_BACKGROUND, N_FOREGROUND);
@@ -126,7 +113,6 @@ public class EsonTableRow extends JPanel {
     private void hoverAction(){
         if (!isSelected && TABLE.isActionEnabled()) {
             changeColor(H_BACKGROUND, H_FOREGROUND);
-            EXITED = false;
         }
     }
     
@@ -139,13 +125,11 @@ public class EsonTableRow extends JPanel {
                 //EventQueue.invokeLater(EXIT_ANIMATION);
                 changeColor(N_BACKGROUND, N_FOREGROUND);
             }
-            EXITED = !isSelected;
         }
     }
 
-    private boolean EXITED = true;
     private int CORNER_RADIUS = 10;
-    private GaussianFilter FILTER = new GaussianFilter();
+    protected GaussianFilter FILTER = new GaussianFilter();
     private Color BACKGROUND = new Color(230,230,230);
     
     @Override
@@ -312,61 +296,6 @@ public class EsonTableRow extends JPanel {
         LAYOUT.setHorizontalGroup(LAYOUT.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING).addGroup(hsg));
         LAYOUT.setVerticalGroup(vpg);
     }
-    
-    private int rf = 0, gf = 0, bf = 0;
-    private int rb = 0, gb = 0, bb = 0;
-    private int redFG = 0, greenFG = 0, blueFG = 0;
-    private int redBG = 0, greenBG = 0, blueBG = 0;
-    private boolean rfOkey = false, gfOkey = false, bfOkey = false;
-    private boolean rbOkey = false, gbOkey = false, bbOkey = false;
-    private Runnable EXIT_ANIMATION = new Runnable() {
-        @Override
-        public void run() {
-            if(fadeTimer.isRunning()){
-                fadeTimer.stop();
-            }
-            
-            rf = H_FOREGROUND.getRed();
-            gf = H_FOREGROUND.getGreen();
-            bf = H_FOREGROUND.getBlue();
-            
-            rb = H_BACKGROUND.getRed();
-            gb = H_BACKGROUND.getGreen();
-            bb = H_BACKGROUND.getBlue();
-        
-            redFG = N_FOREGROUND.getRed();
-            greenFG = N_FOREGROUND.getGreen();
-            blueFG = N_FOREGROUND.getBlue();
-        
-            redBG = N_BACKGROUND.getRed();
-            greenBG = N_BACKGROUND.getGreen();      
-            blueBG = N_BACKGROUND.getBlue();
-            
-            rfOkey = false; gfOkey = false; bfOkey = false;
-            rbOkey = false; gbOkey = false; bbOkey = false;
-            
-            System.out.println("START BACKGROUND: "+rb+","+gb+","+bb+" - ");
-            System.out.println("END BACKGROUND: "+redBG+","+greenBG+","+blueBG);
-            
-            fadeTimer.start();
-        }
-    };
-    private Timer fadeTimer = new Timer(-1, (ActionEvent e) -> {
-        
-        if(rf<redFG && !rfOkey){rf++;}else if(rf>redFG && !rfOkey){rf--;}else{rf=redFG; rfOkey=true;}
-        if(gf<greenFG && !gfOkey){gf++;}else if(gf>greenFG && !gfOkey){gf--;}else{gf=greenFG; gfOkey=true;}
-        if(bf<blueFG && !bfOkey){bf++;}else if(bf>blueFG && !bfOkey){bf--;}else{bf=blueFG; bfOkey=true;}
-        
-        if(rb<redBG && !rbOkey){rb++;}else if(rb>redBG && !rbOkey){rb--;}else{rb=redBG; rbOkey=true;}
-        if(gb<greenBG && !gbOkey){gb++;}else if(gb>greenBG && !gbOkey){gb--;}else{gb=greenBG; gbOkey=true;}
-        if(bb<blueBG && !bbOkey){bb++;}else if(bb>blueBG && !bbOkey){bb--;}else{bb=blueBG; bbOkey=true;}
-        
-        if(rf==redFG && gf==greenFG && bf==blueFG && rb==redBG && gb==greenBG && bb==blueBG){
-            changeColor(N_BACKGROUND,N_FOREGROUND); ((Timer)e.getSource()).stop();
-        }else{ changeColor(new Color(rb,gb,bb),new Color(rf,gf,bf)); }
-        
-    });
-    
 
     private void changeColor(Color bg, Color fg) {
         for (EsonTableColumn column : ESON_COLUMNS) {
@@ -381,8 +310,7 @@ public class EsonTableRow extends JPanel {
     }
 
     public void reset() {
-        isSelected = false; EXITED = true;
-        changeColor(N_BACKGROUND, N_FOREGROUND);
+        isSelected = false;         changeColor(N_BACKGROUND, N_FOREGROUND);
     }
 
     public void setHoverBackground(Color c) {

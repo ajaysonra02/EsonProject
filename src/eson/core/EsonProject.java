@@ -10,7 +10,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -21,9 +24,9 @@ import java.util.Random;
  */
 public class EsonProject {
     
-    private static String EXPIRATION_DATE = "2024-1-19";
-    private static boolean messageShown = false;
-    private static LicenseDialog licenseDialog = new LicenseDialog(null,true);
+    protected static String EXPIRATION_DATE = "2024-1-19";
+    protected static boolean messageShown = false;
+    protected static LicenseDialog licenseDialog = new LicenseDialog(null,true);
     
     public static String getExpirationDate(){
         return EXPIRATION_DATE;
@@ -68,14 +71,14 @@ public class EsonProject {
                     messageShown = true;
                 }
             }
-        }catch(Exception ex){ex.printStackTrace();}
+        }catch(ParseException ex){System.err.println(ex.getMessage());}
         return retval;
     }
     
     public static void openBrowserLink(String link){
         try{
             Desktop.getDesktop().browse(new URI(link));
-        }catch(Exception ex){
+        }catch(IOException | URISyntaxException ex){
             System.err.println("OPEN BROWSER LINK: "+link+" \nERROR MESSAGE: "+ex.getMessage());
         }
     }
@@ -83,7 +86,7 @@ public class EsonProject {
     public static void sendEmailLink(String email, String subject){
         try{
             Desktop.getDesktop().browse(new URI("mailto:"+email+"?subject="+subject));
-        }catch(Exception ex){
+        }catch(IOException | URISyntaxException ex){
             System.err.println("SEND EMAIL LINK: "+email+" \nERROR MESSAGE: "+ex.getMessage());
         }
     }
@@ -92,27 +95,26 @@ public class EsonProject {
         try{
             File f = new File(getLicenseDirectory());
             if(!f.exists()){f.mkdir();}
-            FileWriter fw = new FileWriter(new File(getLicensePath()));
-            EsonCrypt esonCrypt = new EsonCrypt();
-            fw.append(generateRandomString(40)+"\n");
-            fw.append(generateRandomString(35)+"\n");
-            fw.append(generateRandomString(50)+"\n");
-            fw.append(generateRandomString(52)+"\n");
-            fw.append(generateRandomString(34)+"\n");
-            fw.append(generateRandomString(42)+"\n");
-            fw.append(generateRandomString(45)+"\n");
-            fw.append("P1TH4zWawA0oksoKrSsu42ThLEsOnpqmmUjN098lsLqZbH21aJ=\n");
-            fw.append(esonCrypt.encrypt("ihavenolife02", s)+"\n");
-            fw.append(generateRandomString(51)+"\n");
-            fw.append(generateRandomString(34)+"\n");
-            fw.append(generateRandomString(42)+"\n");
-            fw.append(generateRandomString(45)+"\n");
-            fw.append(generateRandomString(49)+"\n");
-            fw.append(generateRandomString(38)+"\n");
-            fw.append(generateRandomString(50)+"\n");
-            fw.close();
-        }catch(Exception ex){
-            ex.printStackTrace();
+            try (FileWriter fw = new FileWriter(new File(getLicensePath()))) {
+                EsonCrypt esonCrypt = new EsonCrypt();
+                fw.append(generateRandomString(40)+"\n");
+                fw.append(generateRandomString(35)+"\n");
+                fw.append(generateRandomString(50)+"\n");
+                fw.append(generateRandomString(52)+"\n");
+                fw.append(generateRandomString(34)+"\n");
+                fw.append(generateRandomString(42)+"\n");
+                fw.append(generateRandomString(45)+"\n");
+                fw.append("P1TH4zWawA0oksoKrSsu42ThLEsOnpqmmUjN098lsLqZbH21aJ=\n");
+                fw.append(esonCrypt.encrypt("ihavenolife02", s)+"\n");
+                fw.append(generateRandomString(51)+"\n");
+                fw.append(generateRandomString(34)+"\n");
+                fw.append(generateRandomString(42)+"\n");
+                fw.append(generateRandomString(45)+"\n");
+                fw.append(generateRandomString(49)+"\n");
+                fw.append(generateRandomString(38)+"\n");
+                fw.append(generateRandomString(50)+"\n");
+            }
+        }catch(IOException ex){
             System.err.println("WRITE LICENSE FILE ERROR: "+ex.getMessage());
         }
         return true;
@@ -130,23 +132,25 @@ public class EsonProject {
     private static boolean readLicenseStatus(File f){
         boolean retval = false;
         try{
-            FileReader fr = new FileReader(f);
-            BufferedReader br = new java.io.BufferedReader(fr);
-            String line = "";
-            boolean nextLine = false;
-            while ((line = br.readLine()) != null) {
-                if(nextLine){
-                    String s = new EsonCrypt().decrypt("ihavenolife02", line);
-                    retval = s.toUpperCase().trim().equals("LICENSED COPY OF ESON PROJECT");
-                    break;
+            BufferedReader br;
+            try (FileReader fr = new FileReader(f)) {
+                br = new java.io.BufferedReader(fr);
+                String line;
+                boolean nextLine = false;
+                while ((line = br.readLine()) != null) {
+                    if(nextLine){
+                        String s = new EsonCrypt().decrypt("ihavenolife02", line);
+                        retval = s.toUpperCase().trim().equals("LICENSED COPY OF ESON PROJECT");
+                        break;
+                    }
+                    if(line.trim().equals("P1TH4zWawA0oksoKrSsu42ThLEsOnpqmmUjN098lsLqZbH21aJ=")){
+                        nextLine = true;
+                    }
                 }
-                if(line.trim().equals("P1TH4zWawA0oksoKrSsu42ThLEsOnpqmmUjN098lsLqZbH21aJ=")){
-                    nextLine = true;
-                }
-            }fr.close(); br.close();
-        }catch(Exception ex){ 
+            }
+            br.close();
+        }catch(IOException ex){ 
             retval = false;
-            ex.printStackTrace();
             System.err.println("READ LICENSE FILE ERROR: "+ex.getMessage());
         }
         return retval;

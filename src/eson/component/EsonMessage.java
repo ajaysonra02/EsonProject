@@ -13,7 +13,7 @@ import eson.core.util.ImageRenderer;
  *
  * @author ©Wawa Eson Robin Asidera
  */
-public class EsonMessage extends javax.swing.JDialog{
+public final class EsonMessage extends javax.swing.JDialog{
 
     private boolean shadowShown = false;
     private int retval = 0;
@@ -152,7 +152,6 @@ public class EsonMessage extends javax.swing.JDialog{
     private void checkColor(){
         COLOR = Color.BLACK;
         String image_name = "information_h20px.png";
-        int w = 14, h = 14;
         switch(MESSAGE_TYPE){
             case PLAIN:
                 COLOR = Color.BLACK;
@@ -188,16 +187,14 @@ public class EsonMessage extends javax.swing.JDialog{
     
     private void keyAction(KeyEvent evt){
         switch (evt.getKeyCode()) {
-            case KeyEvent.VK_ENTER:
-                accept.animateAction();
-                break;
-            case KeyEvent.VK_ESCAPE:
+            case KeyEvent.VK_ENTER -> accept.animateAction();
+            case KeyEvent.VK_ESCAPE -> {
                 if(decline.isShowing()){
                     decline.animateAction();
                 }else{
                     accept.animateAction();
                 }
-                break;
+            }
         }
     }
 

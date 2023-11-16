@@ -20,10 +20,10 @@ import javax.swing.table.TableRowSorter;
  */
 public class TableSearcher {
     
-    private JTable TABLE;
-    private JTextField SEARCH;
-    private SearchCaretListener caretListener;
-    private SearchKeyListener keyListener;
+    protected JTable TABLE;
+    protected JTextField SEARCH;
+    protected SearchCaretListener caretListener;
+    protected SearchKeyListener keyListener;
     
     public TableSearcher(JTextField field, JTable table){
         TABLE = table;
@@ -45,12 +45,13 @@ public class TableSearcher {
         SEARCH.removeCaretListener(caretListener);
     }
     
-    private class SearchKeyListener implements KeyListener{
-        private TableRowSorter rowSorter;
+    protected class SearchKeyListener implements KeyListener{
+        protected TableRowSorter rowSorter;
         public SearchKeyListener(TableRowSorter sorter){ rowSorter = sorter; }
         @Override public void keyTyped(KeyEvent evt){/**do nothing**/}
         @Override public void keyPressed(KeyEvent evt){/**do nothing**/}
-        @Override public void keyReleased(KeyEvent evt){
+        @Override
+        public void keyReleased(KeyEvent evt){
             try{
                 String text = SEARCH.getText();
                 rowSorter.setRowFilter(text.trim().length()==0?null:RowFilter.regexFilter("(?i)"+text));
@@ -58,10 +59,11 @@ public class TableSearcher {
         }
     }
     
-    private class SearchCaretListener implements CaretListener{
-        private TableRowSorter rowSorter;
+    protected class SearchCaretListener implements CaretListener{
+        protected TableRowSorter rowSorter;
         public SearchCaretListener(TableRowSorter sorter){ rowSorter = sorter; }
-        @Override public void caretUpdate(CaretEvent e) {
+        @Override@SuppressWarnings("unchecked")
+        public void caretUpdate(CaretEvent e) {
             try{
                 String text = SEARCH.getText();
                 rowSorter.setRowFilter(text.trim().length()==0?null:RowFilter.regexFilter("(?i)"+text));

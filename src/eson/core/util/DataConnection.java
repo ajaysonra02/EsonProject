@@ -7,9 +7,9 @@ package eson.core.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -23,8 +23,8 @@ public class DataConnection {
             if(NAME!=null){
                 NAME = NAME.trim().equals("")?"":NAME;
             }else{ NAME=""; }
-            return DriverManager.getConnection("jdbc:postgresql://"+DATABASE_ADDRESS+":"+DATABASE_PORT+"/"+DATABASE_NAME,DATABASE_USERNAME,DATABASE_PASSWORD);
-        }catch(Exception e){
+            return DriverManager.getConnection("jdbc:postgresql://"+DATABASE_ADDRESS+":"+DATABASE_PORT+"/"+NAME,DATABASE_USERNAME,DATABASE_PASSWORD);
+        }catch(ClassNotFoundException | SQLException e){
             return null;
         }
     }
@@ -36,13 +36,13 @@ public class DataConnection {
     public Statement createStatement(){
         try{
             return getConnection().createStatement();
-        }catch(Exception e){ return null;}
+        }catch(SQLException e){ return null;}
     }
     
     public Statement createScrollableStatement(Connection connection){
         try{
             return connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-        }catch(Exception e){ return null;}
+        }catch(SQLException e){ return null;}
     }
     
     public void setDatabaseConfiguration(String NAME, String ADDRESS, String PORT, String USERNAME, String PASSWORD){
@@ -65,14 +65,14 @@ public class DataConnection {
     public boolean isDatabaseExists(){
         boolean retval = false;
         try{
-            ResultSet rs = getConnection(null).getMetaData().getCatalogs();
-            while(rs.next()){
-                if(DATABASE_NAME.compareToIgnoreCase(rs.getString(1))==0){
-                    retval = true;
+            try (ResultSet rs = getConnection(null).getMetaData().getCatalogs()) {
+                while(rs.next()){
+                    if(DATABASE_NAME.compareToIgnoreCase(rs.getString(1))==0){
+                        retval = true;
+                    }
                 }
             }
-            rs.close();
-        }catch(Exception ex){
+        }catch(SQLException ex){
             System.err.println("CHECK DATABASE EXISTS ERROR : "+ex.getMessage());
             retval = false;
         }
@@ -82,14 +82,12 @@ public class DataConnection {
     public boolean isTableExists(String schemaName){
         boolean retval = false;
         try{
-            Statement st = createStatement();
-            ResultSet rs = st.executeQuery("select exists (select * from pg_catalog.pg_namespace where nspname = '"+schemaName+"');");
-            if(rs.next()){
-                retval = rs.getBoolean("exists");
+            try (Statement st = createStatement(); ResultSet rs = st.executeQuery("select exists (select * from pg_catalog.pg_namespace where nspname = '"+schemaName+"');")) {
+                if(rs.next()){
+                    retval = rs.getBoolean("exists");
+                }
             }
-            rs.close();
-            st.close();
-        }catch(Exception ex){
+        }catch(SQLException ex){
             retval = false;
             System.err.println("CHECK TABLE EXISTS ERROR : "+ex.getMessage());
         }
@@ -98,16 +96,15 @@ public class DataConnection {
     
     public boolean createDatabase(){
         try{
-            Statement st = getConnection(null).createStatement();
-            st.executeUpdate("create database "+DATABASE_NAME+";");
-            st.close();
+            try (Statement st = getConnection(null).createStatement()) {
+                st.executeUpdate("create database "+DATABASE_NAME+";");
+            }
             return true;
-        }catch(Exception ex){
+        }catch(SQLException ex){
             if(ex.getMessage().equals("ERROR: database \""+DATABASE_NAME+"\" already exists")){
                 return true;
             }
             System.err.println("CREATE DATABASE ERROR : "+ex.getMessage());
-            ex.printStackTrace();
             return false;
         }
     }

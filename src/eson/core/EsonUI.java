@@ -124,7 +124,7 @@ public class EsonUI {
     
     private Window INTRO_WINDOW = null;
     private int COUNTER = 0;
-    private Runnable INTRO_RUNNABLE = new Runnable() {
+    protected Runnable INTRO_RUNNABLE = new Runnable() {
         @Override
         public void run() {
             Toolkit.getDefaultToolkit().beep();
@@ -168,7 +168,7 @@ public class EsonUI {
         GraphicsDevice[] gs = getScreenDevices();
         int retval[] = new int[gs.length];
         for (int i = 0; i < gs.length; i++) {
-            retval[i] = gs[i].getDisplayMode().getRefreshRate();;
+            retval[i] = gs[i].getDisplayMode().getRefreshRate();
             if (retval[i] == DisplayMode.REFRESH_RATE_UNKNOWN) {
                 System.err.println("Screen "+i+": Unknown Refresh Rate");
             }

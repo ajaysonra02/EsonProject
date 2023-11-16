@@ -16,7 +16,8 @@ public class GaussianFilter{
     }
 
     public GaussianFilter(float radius) {
-        setRadius(radius);
+        this.radius = radius;
+        kernel = makeKernel(radius);
     }
 
     public float getRadius() {

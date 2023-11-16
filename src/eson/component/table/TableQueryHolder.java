@@ -15,6 +15,7 @@ import static javax.swing.SwingWorker.StateValue.DONE;
 import static javax.swing.SwingWorker.StateValue.PENDING;
 import static javax.swing.SwingWorker.StateValue.STARTED;
 import eson.component.EsonProgress;
+import java.util.concurrent.ExecutionException;
 
 /**
  *
@@ -56,27 +57,25 @@ public class TableQueryHolder {
         }
         sqlWorker.addPropertyChangeListener((PropertyChangeEvent evt) -> {
             switch (evt.getPropertyName()) {
-                case "state":
+                case "state" -> {
                     switch ((StateValue) evt.getNewValue()) {
-                        case DONE:
+                        case DONE -> {
                             try {
                                 sqlWorker.get();
                             } catch (final CancellationException e) {
-                                e.printStackTrace();
                                 JOptionPane.showMessageDialog(null, "Query was cancelled!!", "EsonProject", JOptionPane.WARNING_MESSAGE);
-                            } catch (final Exception e) {
-                                e.printStackTrace();
+                            } catch (final InterruptedException | ExecutionException e) {
                                 JOptionPane.showMessageDialog(null, "Query Failed!!", "EsonProject", JOptionPane.ERROR_MESSAGE);
                             }
                             sqlWorker = null;
                             separator = null;
-                            break;
-                        case STARTED:
-                            break;
-                        case PENDING:
-                            break;
                     }
-                    break;
+                        case STARTED -> {
+                    }
+                        case PENDING -> {
+                    }
+                    }
+                }
             }
         });
         sqlWorker.execute();
@@ -87,6 +86,6 @@ public class TableQueryHolder {
     private EsonProgress progress;
     private TableQueryWorker sqlWorker;
     private String separator = null;
-    private boolean isEsonTable;
+    protected Boolean isEsonTable;
     
 }

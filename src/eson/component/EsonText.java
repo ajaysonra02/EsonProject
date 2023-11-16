@@ -61,16 +61,11 @@ public class EsonText extends javax.swing.JPanel {
     private boolean HINT_SHOWN = false,
             AS_PASSWORD = false,
             LABEL_SHOWN = true,
-            EDITABLE = true,
             BUTTON_SHOWN = false,
             FOCUS_GAINED = false,
             DRAGGED = false,
             INFO_LABEL_SHOWN = false;
-    private int ICON_WIDTH,
-            ICON_HEIGHT,
-            ICON_GAP,
-            CORNER_RADIUS = 20;
-    private Image IMAGE_ICON;
+    private int CORNER_RADIUS = 20;
     private String LABEL_TEXT;
     private char PASSWORD_ECHO_CHAR = '●';
     private EsonTextAlignment ALIGNMENT = EsonTextAlignment.LEADING;
@@ -193,7 +188,6 @@ public class EsonText extends javax.swing.JPanel {
         textfield.setOpaque(false);
         peek.setVisible(false);
         setAsPasswordField(false);
-        EDITABLE = true;
         LABEL_TEXT = "Label";
         PASSWORD_ECHO_CHAR = '●';
         INFO_LABEL_SHOWN = false;
@@ -231,17 +225,14 @@ public class EsonText extends javax.swing.JPanel {
     public void animateAction(){
         if(EsonProject.start()){
             new Thread() {
-                @Override
-                public void run() {
+                @Override public void run() {
                     try {
                         buttonPressed();
                         Thread.sleep(150);
                         buttonExited();
                         Thread.sleep(50);
                         buttonAction();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
+                    } catch (InterruptedException ex) {                    }
                 }
             }.start();
         }
@@ -281,7 +272,7 @@ public class EsonText extends javax.swing.JPanel {
     
     public void setInfoLabelShown(boolean flag){
         INFO_LABEL_SHOWN = flag;
-        footer.setVisible(flag);;
+        footer.setVisible(flag);
     }
     
     public boolean isInfoLabelShown(){
@@ -459,31 +450,24 @@ public class EsonText extends javax.swing.JPanel {
     
     private void checkHorizontalAlignment(){
         switch(ALIGNMENT){
-            case LEFT:      textfield.setHorizontalAlignment(JTextField.LEFT); break;
-            case RIGHT:     textfield.setHorizontalAlignment(JTextField.RIGHT); break;
-            case CENTER:    textfield.setHorizontalAlignment(JTextField.CENTER); break;
-            case LEADING:   textfield.setHorizontalAlignment(JTextField.LEADING); break;
-            case TRAILING:  textfield.setHorizontalAlignment(JTextField.TRAILING); break;
+            case LEFT -> textfield.setHorizontalAlignment(JTextField.LEFT);
+            case RIGHT -> textfield.setHorizontalAlignment(JTextField.RIGHT);
+            case CENTER -> textfield.setHorizontalAlignment(JTextField.CENTER);
+            case LEADING -> textfield.setHorizontalAlignment(JTextField.LEADING);
+            case TRAILING -> textfield.setHorizontalAlignment(JTextField.TRAILING);
         }
     }
     
     public void setIcon(Image image, int width, int height, Color foreground){
-        IMAGE_ICON = image;
-        ICON_WIDTH = width;
-        ICON_HEIGHT = height;
         label.setIcon(RENDERER.resizeIcon(image, width, height, foreground));
     }
     
     public void setIcon(Image image, int width, int height, Color foreground, int gap){
-        IMAGE_ICON = image;
-        ICON_WIDTH = width;
-        ICON_HEIGHT = height;
         setIconTextGap(gap);
         label.setIcon(RENDERER.resizeIcon(image, width, height, foreground));
     }
     
     public void setIconTextGap(int gap){
-        ICON_GAP = gap;
         label.setIconTextGap(gap);
     }
     
@@ -497,7 +481,6 @@ public class EsonText extends javax.swing.JPanel {
     }
     
     public void setEditable(boolean flag){
-        EDITABLE = flag;
         textfield.setEditable(flag);
     }
     

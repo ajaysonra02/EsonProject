@@ -55,7 +55,7 @@ public class EsonPanel extends javax.swing.JPanel {
     private int xlocation = 0, ylocation = 0;
     private boolean enableWindowDrag = false;
     private BasicStroke STROKE = new BasicStroke(1f);
-    private GaussianFilter FILTER = new GaussianFilter();
+    protected GaussianFilter FILTER = new GaussianFilter();
     
     public EsonPanel() {
         initComponents();
@@ -215,7 +215,7 @@ public class EsonPanel extends javax.swing.JPanel {
     }
     
     private int COUNTER = 0;
-    private Runnable MODAL_RUNNABLE = new Runnable() {
+    protected Runnable MODAL_RUNNABLE = new Runnable() {
         @Override
         public void run() {
             Toolkit.getDefaultToolkit().beep();
@@ -238,7 +238,7 @@ public class EsonPanel extends javax.swing.JPanel {
         repaint();
     });
     
-    private Runnable BREATH_RUNNABLE = new Runnable() {
+    protected Runnable BREATH_RUNNABLE = new Runnable() {
         @Override
         public void run() {
             if(breathTimer.isRunning()){

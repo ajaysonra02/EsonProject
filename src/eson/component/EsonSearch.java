@@ -54,7 +54,7 @@ public class EsonSearch extends javax.swing.JPanel {
     private EsonProgress PROGRESS = null;
     private TableSearcher SEARCHER = null;
     private TableQueryHolder TABLE_WORKER = null;
-    private GaussianFilter FILTER = null;
+    protected GaussianFilter FILTER = null;
     private Image SEARCH_ICON = null;
     private ImageRenderer RENDERER = null;
     private DataConnection dataConnection = null;
@@ -248,7 +248,9 @@ public class EsonSearch extends javax.swing.JPanel {
     }
     
     private void showProgress(boolean flag){
-        //TODO PROGRESS BAR
+        if(flag){
+            
+        }
     }
     
     private void initConfiguration(){

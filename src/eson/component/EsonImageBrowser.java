@@ -84,6 +84,7 @@ public class EsonImageBrowser extends javax.swing.JDialog {
             private final ExecutorService executor = Executors.newCachedThreadPool();
             
             @Override
+            @SuppressWarnings("unchecked")
             public Icon getIcon(File file){
                 if(!imageFilePattern.matcher(file.getName()).matches()){
                     return null;

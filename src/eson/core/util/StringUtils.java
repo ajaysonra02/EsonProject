@@ -66,26 +66,26 @@ public class StringUtils{
     
     public boolean isLong(String text) {
         try {
-            Long.parseLong(text); return true;
-        } catch (Exception ex) { return false; }
+            Long.valueOf(text); return true;
+        } catch (NumberFormatException ex) { return false; }
     }
     
     public boolean isDouble(String text) {
         try {
-            Double.parseDouble(text); return true;
-        } catch (Exception ex) { return false; }
+            Double.valueOf(text); return true;
+        } catch (NumberFormatException ex) { return false; }
     }
     
     public boolean isInteger(String text) {
         try {
-            Integer.parseInt(text); return true;
-        } catch (Exception ex) { return false; }
+            Integer.valueOf(text); return true;
+        } catch (NumberFormatException ex) { return false; }
     }
     
     public boolean isFloat(String text) {
         try {
-            Float.parseFloat(text); return true;
-        } catch (Exception ex) { return false; }
+            Float.valueOf(text); return true;
+        } catch (NumberFormatException ex) { return false; }
     }
     
     public String formatDecimal(String regex, double value){

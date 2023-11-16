@@ -21,6 +21,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.Timer;
@@ -103,7 +104,7 @@ public class LicenseDialog extends javax.swing.JDialog {
         try{
             Date EXPIRATION = new SimpleDateFormat("yyyy-MM-dd").parse(EsonProject.getExpirationDate()); 
             license.setText("Expiration: "+new SimpleDateFormat("dd-MMM-yy").format(EXPIRATION));
-        }catch(Exception ex){
+        }catch(ParseException ex){
             System.err.println("LICENSE DIALOG SHOW EXPIRATION: "+ex.getMessage());
         }
         showDialog();
@@ -128,7 +129,7 @@ public class LicenseDialog extends javax.swing.JDialog {
     
     private Window INTRO_WINDOW = null;
     private int INTRO_COUNTER = 0;
-    private Runnable INTRO_RUNNABLE = new Runnable() {
+    protected Runnable INTRO_RUNNABLE = new Runnable() {
         @Override
         public void run() {
             if(introTimer.isRunning()){
@@ -168,9 +169,7 @@ public class LicenseDialog extends javax.swing.JDialog {
                     stateReleased();
                     Thread.sleep(50);
                     buttonAction();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                } catch (InterruptedException ex) {}
             }
         }.start();
     }
@@ -216,25 +215,25 @@ public class LicenseDialog extends javax.swing.JDialog {
         g2d.setStroke(new BasicStroke(1f));
         int CORNER_RADIUS = 10;
         Color BACKGROUND = Color.WHITE;
-        int y = 0, WIDTH = MainPanel.getWidth(), HEIGHT = MainPanel.getHeight();
+        int bodyY = 0, bodyWidth = MainPanel.getWidth(), bodyHeight = MainPanel.getHeight();
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if(MODAL){
             g2d.setColor(MODAL_COLOR);
-            g2d.fillRoundRect(1,1+y,WIDTH-2,HEIGHT-(2+y),CORNER_RADIUS+5,CORNER_RADIUS+5);
+            g2d.fillRoundRect(1,1+bodyY,bodyWidth-2,bodyHeight-(2+bodyY),CORNER_RADIUS+5,CORNER_RADIUS+5);
         }
         if(PANEL_SHADOW){
             if(PANEL_SHADOW_IMAGE == null){
-                BufferedImage img = RENDERER.createCompatibleImage(WIDTH, HEIGHT);
+                BufferedImage img = RENDERER.createCompatibleImage(bodyWidth, bodyHeight);
                 Graphics2D tg2d = img.createGraphics();
                 tg2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                tg2d.fillRoundRect(5, 5+y, WIDTH - 12, HEIGHT - (14+y), CORNER_RADIUS, CORNER_RADIUS);
+                tg2d.fillRoundRect(5, 5+bodyY, bodyWidth - 12, bodyHeight - (14+bodyY), CORNER_RADIUS, CORNER_RADIUS);
                 tg2d.dispose();
                 PANEL_SHADOW_IMAGE = RENDERER.generateShadow(img, 5, Color.black, 0.5f);
             }
             g2d.drawImage(PANEL_SHADOW_IMAGE, 2, 4, null);
         }
         g2d.setColor(BACKGROUND);
-        g2d.fillRoundRect(5,5+y,WIDTH-11,HEIGHT-(11+y),CORNER_RADIUS,CORNER_RADIUS);
+        g2d.fillRoundRect(5,5+bodyY,bodyWidth-11,bodyHeight-(11+bodyY),CORNER_RADIUS,CORNER_RADIUS);
     }
     
     private void paintButton(Graphics g){
@@ -265,7 +264,7 @@ public class LicenseDialog extends javax.swing.JDialog {
     }
     
     private int COUNTER = 0;
-    private Runnable MODAL_RUNNABLE = new Runnable() {
+    protected Runnable MODAL_RUNNABLE = new Runnable() {
         @Override
         public void run() {
             Toolkit.getDefaultToolkit().beep();

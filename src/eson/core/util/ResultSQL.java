@@ -36,10 +36,9 @@ public class ResultSQL{
     }
     
     public int getRowCount() throws SQLException{
-        int retval = 0;
         execute();
         rs.last();  
-        retval = rs.getRow();
+        int retval = rs.getRow();
         rs.beforeFirst();
         return retval;
     }
