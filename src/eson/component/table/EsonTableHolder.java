@@ -6,12 +6,12 @@ package eson.component.table;
 
 import eson.component.EsonSearch;
 import eson.core.util.ImageRenderer;
+import eson.core.util.LoadingAnimation;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
-import javax.swing.Timer;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -153,7 +152,7 @@ public class EsonTableHolder extends Exception{
             } else {
                 Collections.sort(table.VALUES, (Object[] a, Object[] b) -> compareInstances(a[columnIndex],b[columnIndex]));
             }
-            table.repopulate();
+            table.refresh();
             closeLoading();
             return 0;
         }
@@ -161,47 +160,27 @@ public class EsonTableHolder extends Exception{
     
     protected void showLoading(String message){
         table.setActionEnabled(false);
-        if(!isLoading){
+        if(!loadingHolder.isLoading()){
             table.setBodyBlurShown(true);
-            isLoading = false;
             table.loadingMessage.setText(message);
             table.esonProjectCover.setSize(table.bodyPane.getSize());
             table.esonProjectCover.setLocation(table.bodyPane.getLocation());
             table.add(table.esonProjectCover, 0);
             table.esonProjectCover.setVisible(true);
             table.revalidate(); table.repaint();
-            isLoading = true;
-            table.loading.setText(loadInfo[loadInfo.length-1]);
-            loadingCounter = 0;
-            loadingTimer.start();
+            loadingHolder.simpleLoading(table.loading, 3);
         }
     }
     
     protected void closeLoading(){
         table.setActionEnabled(true);
-        isLoading = false;
+        loadingHolder.stopLoading();
         if(table.esonProjectCover.isShowing()){
             table.remove(table.esonProjectCover);
             table.repaint();
             table.setBodyBlurShown(false);
         }
     }
-    
-    protected boolean isLoading = false;
-    protected int loadingCounter = 0;
-    protected String[] loadInfo = new String[]{"● ◌ ◌","● ● ◌","● ● ●","◌ ● ●","◌ ◌ ●","◌ ◌ ◌"};
-    protected javax.swing.Timer loadingTimer = new javax.swing.Timer(300, new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if(isLoading){
-                table.loading.setText(loadInfo[loadingCounter]);
-                loadingCounter++;
-                if(loadingCounter==loadInfo.length){
-                    loadingCounter = 0;
-                }
-            }else{((Timer)e.getSource()).stop();}
-        }
-    });
     
     protected int compareInstances(Object a, Object b){
         if(a instanceof Integer){
@@ -557,4 +536,5 @@ public class EsonTableHolder extends Exception{
     }
     
     protected EsonTable table = null;
+    private final LoadingAnimation loadingHolder = new LoadingAnimation();
 }

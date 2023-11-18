@@ -143,9 +143,6 @@
         </Component>
         <Component class="eson.component.EsonButton" name="decline">
           <Properties>
-            <Property name="buttonType" type="json.asidera.component.bootstrap.EsonRoundedButton$EsonButtonType" editor="org.netbeans.modules.form.editors.EnumEditor">
-              <Value id="ERROR"/>
-            </Property>
             <Property name="cornerRadius" type="int" value="5"/>
             <Property name="text" type="java.lang.String" value="NO"/>
           </Properties>

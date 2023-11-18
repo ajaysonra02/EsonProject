@@ -9,12 +9,8 @@ import java.beans.PropertyChangeEvent;
 import java.sql.Statement;
 import java.util.concurrent.CancellationException;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.SwingWorker.StateValue;
 import static javax.swing.SwingWorker.StateValue.DONE;
-import static javax.swing.SwingWorker.StateValue.PENDING;
-import static javax.swing.SwingWorker.StateValue.STARTED;
-import eson.component.EsonProgress;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -23,19 +19,8 @@ import java.util.concurrent.ExecutionException;
  */
 public class TableQueryHolder {
     
-    public TableQueryHolder(JTable table, EsonProgress progress){
-        this.jTable = table;
-        this.progress = progress;
-        isEsonTable = false;
-    }
-    
     public TableQueryHolder(EsonTable esonTable){
         this.esonTable = esonTable;
-        isEsonTable = true;
-    }
-    
-    public boolean isEsonTable(){
-        return isEsonTable;
     }
     
     public void setSeparator(String separator){
@@ -43,15 +28,7 @@ public class TableQueryHolder {
     }
     
     public void sqlWork(Statement st, String sqlQuery, String queryTableColumnNames[], boolean showCounter){
-        if(!isEsonTable){
-            sqlWorker = new TableQueryWorker(jTable, progress, st,sqlQuery, queryTableColumnNames, showCounter);
-        }else{
-            sqlWorker = new TableQueryWorker(esonTable, st,sqlQuery, queryTableColumnNames, showCounter);
-        }
-        startSqlWork();
-    }
-    
-    private void startSqlWork(){
+        sqlWorker = new TableQueryWorker(esonTable, st,sqlQuery, queryTableColumnNames, showCounter);
         if (separator != null) {
             sqlWorker.setSplitter(separator);
         }
@@ -69,23 +46,12 @@ public class TableQueryHolder {
                             }
                             sqlWorker = null;
                             separator = null;
-                    }
-                        case STARTED -> {
-                    }
-                        case PENDING -> {
-                    }
-                    }
-                }
-            }
-        });
+        }}}}});
         sqlWorker.execute();
     }
     
-    private JTable jTable;
     private EsonTable esonTable;
-    private EsonProgress progress;
     private TableQueryWorker sqlWorker;
     private String separator = null;
-    protected Boolean isEsonTable;
     
 }

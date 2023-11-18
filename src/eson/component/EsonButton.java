@@ -560,6 +560,10 @@ public class EsonButton extends javax.swing.JPanel{
         listenerList.remove(ActionListener.class, l);
     }
     
+    public ActionListener[] getActionListeners(){
+        return listenerList.getListeners(ActionListener.class);
+    }
+    
     private void buttonAction(){
         ActionListener[] action = listenerList.getListeners(ActionListener.class);
         if(action.length>0){

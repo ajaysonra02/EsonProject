@@ -104,7 +104,7 @@ public class EsonBlur extends LayerUI<Component> {
             mOffscreenImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         }
         Graphics2D ig2 = mOffscreenImage.createGraphics();
-        ig2.setClip(g.getClip());
+        ig2.setClip(g.getClip());   
         super.paint(ig2, c);
         ig2.dispose();
         Graphics2D g2 = (Graphics2D)g;
@@ -115,21 +115,44 @@ public class EsonBlur extends LayerUI<Component> {
         }
     }
     
+    public void blurComponent(Container container, boolean flag){
+        CONTAINER = container;
+        exitOnHover = false;
+        actionEnabled = false;
+        if(flag){ showBlur(); }else{ removeBlur(); }
+    }
+    
+    public void blurComponentWithAction(Container container, boolean exitOnHover, boolean flag){
+        CONTAINER = container;
+        this.exitOnHover = exitOnHover;
+        actionEnabled = true;
+        if(flag){ showBlur(); }else{ removeBlur(); }
+    }
+    
+    public void blurComponentWithAction(Container container, boolean flag){
+        CONTAINER = container;
+        this.exitOnHover = exitOnHover;
+        actionEnabled = true;
+        if(flag){ showBlur(); }else{ removeBlur(); }
+    }
+    
     private Container CONTAINER = null;
     private Component VIEW = null;
-    public void blurComponent(Container container){
-        CONTAINER = container;
+    private boolean exitOnHover = false, actionEnabled = false;
+    protected void showBlur(){
         VIEW = null;
         if(CONTAINER.getComponentCount()>0){
             VIEW = CONTAINER.getComponent(0);
             JLayer<Component> layer = new JLayer<>(VIEW, this);
-            layer.addMouseListener(new MouseListener() {
+            if(actionEnabled){
+                layer.addMouseListener(new MouseListener() {
                     @Override public void mouseClicked(MouseEvent arg0) { removeBlur(); }
                     @Override public void mousePressed(MouseEvent arg0) { }
                     @Override public void mouseReleased(MouseEvent arg0) { }
-                    @Override public void mouseEntered(MouseEvent arg0) {  }
+                    @Override public void mouseEntered(MouseEvent arg0) { if(exitOnHover){removeBlur();} }
                     @Override public void mouseExited(MouseEvent arg0) { }
                 });
+            }
             CONTAINER.removeAll();
             layer.setSize(CONTAINER.getSize());
             CONTAINER.add(layer);
@@ -139,7 +162,7 @@ public class EsonBlur extends LayerUI<Component> {
         }
     }
     
-    public void removeBlur(){
+    protected void removeBlur(){
         if(VIEW!=null){
             CONTAINER.removeAll();
             VIEW.setSize(CONTAINER.getSize());

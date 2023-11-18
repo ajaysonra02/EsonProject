@@ -50,11 +50,18 @@ public class EsonTableRow extends JPanel {
         ROW_HEIGHT = rowHeight;
         
         ESON_COLUMNS = new EsonTableColumn[esonColumn.size()];
+        boolean hasResizableColumn = false;
         for(Object[] obj:esonColumn){
+            if(!hasResizableColumn && (boolean)obj[2] && (boolean)obj[4]){
+                hasResizableColumn = true;
+            }
             COLUMN_WIDTHS.add((int)obj[1]);
             RESIZABLE_COLUMNS.add((boolean)obj[2]);
             COLUMN_ALIGNMENT.add((int)obj[3]);
             VISIBLE_COLUMNS.add((boolean)obj[4]);
+        }
+        if(!hasResizableColumn){
+            RESIZABLE_COLUMNS.replaceAll(e -> true);
         }
         setBorder(BorderFactory.createEmptyBorder(0,10,0,10));
         initColumns();

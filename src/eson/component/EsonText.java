@@ -32,6 +32,7 @@ import eson.core.EsonColor;
 import eson.core.EsonProject;
 import eson.core.util.GaussianFilter;
 import eson.core.util.ImageRenderer;
+import javax.swing.JPasswordField;
 
 /**
  *
@@ -198,8 +199,14 @@ public class EsonText extends javax.swing.JPanel {
         textfield.setBackground(NORMAL_BACKGROUND);
         BACKGROUND = NORMAL_BACKGROUND;
         initButtonConfigurations();
+        label.setFocusable(false);
+        label.setName("EsonText Label");
         label.setFont(new Font("SansSerif",0,11));
         labely = 9;
+    }
+    
+    public JPasswordField getField(){
+        return textfield;
     }
     
     private void initButtonConfigurations(){
@@ -486,12 +493,6 @@ public class EsonText extends javax.swing.JPanel {
     
     //Listeners
     private void initListeners(){
-        addFocusListener(new FocusListener() {
-            @Override public void focusGained(FocusEvent e){ 
-                textfield.requestFocus(true);
-            }
-            @Override public void focusLost(FocusEvent e){}
-        });
         textfield.addFocusListener(new FocusListener() {
             @Override public void focusGained(FocusEvent arg0) {
                 isError = false; isWarning = false;
@@ -508,7 +509,7 @@ public class EsonText extends javax.swing.JPanel {
     private void refreshField(){
         if(HINT_SHOWN){
             String txt = "@" + LABEL_TEXT.toUpperCase();
-            if (textfield.getText().equals(txt)) {
+            if (getText().equals(txt)) {
                 textfield.setText("");
 //                label.setOpaque(false);
                 if(LABEL_SHOWN){
@@ -533,17 +534,6 @@ public class EsonText extends javax.swing.JPanel {
         textfield.removeActionListener(l);
     }
     
-//    @Override
-//    public void addFocusListener(FocusListener l){
-//        textfield.addFocusListener(l);
-//    }
-//    
-//    @Override
-//    public void removeFocusListener(FocusListener l){
-////        listenerList.remove(FocusListener.class, l);
-//        textfield.removeFocusListener(l);
-//    }
-    
     @Override
     public void addKeyListener(KeyListener l){
         listenerList.add(KeyListener.class, l);
@@ -556,12 +546,6 @@ public class EsonText extends javax.swing.JPanel {
         textfield.removeKeyListener(l);
     }
     
-    //Attributes
-    @Override
-    public void setNextFocusableComponent(Component c){
-        textfield.setNextFocusableComponent(c);
-    }
-    
     public void focusLost(){
         textFocusLost();
     }
@@ -571,7 +555,7 @@ public class EsonText extends javax.swing.JPanel {
         setFieldForeground(TEXT_FOREGROUND);
         textfield.setText(text);
         if (HINT_SHOWN && !textfield.hasFocus()) {
-            if (textfield.getText().trim().equals("")) {
+            if (getText().trim().equals("")) {
                 textfield.setText("@" + LABEL_TEXT.toUpperCase());
                 textfield.setFont(HINT_FONT!=null?HINT_FONT:TEXT_FONT);
                 textfield.setForeground(HINT_FOREGROUND);
@@ -589,7 +573,7 @@ public class EsonText extends javax.swing.JPanel {
     }
     
     public String getText(){
-        return textfield.getText();
+        return String.valueOf(textfield.getPassword());
     }
     
     //returns if hasSelectedtext
@@ -715,7 +699,7 @@ public class EsonText extends javax.swing.JPanel {
         BORDER = ERROR_FOREGROUND;
         setFieldForeground(ERROR_FOREGROUND);
         BORDER_STROKE = new BasicStroke(1f);
-        label.setForeground(!textfield.getText().equals("@"+LABEL_TEXT.toUpperCase())?ERROR_FOREGROUND:PARENT_BACKGROUND);
+        label.setForeground(!getText().equals("@"+LABEL_TEXT.toUpperCase())?ERROR_FOREGROUND:PARENT_BACKGROUND);
         if(BUTTON_SHOWN){
             buttonError();
         }
@@ -736,7 +720,7 @@ public class EsonText extends javax.swing.JPanel {
         BORDER = ERROR_FOREGROUND;
         setFieldForeground(ERROR_FOREGROUND);
         BORDER_STROKE = new BasicStroke(1f);
-        label.setForeground(!textfield.getText().equals("@"+LABEL_TEXT.toUpperCase())?LABEL_FOREGROUND:PARENT_BACKGROUND);
+        label.setForeground(!getText().equals("@"+LABEL_TEXT.toUpperCase())?LABEL_FOREGROUND:PARENT_BACKGROUND);
         if(BUTTON_SHOWN){
             buttonError();
         }
@@ -757,7 +741,7 @@ public class EsonText extends javax.swing.JPanel {
         BORDER = WARNING_FOREGROUND;
         setFieldForeground(WARNING_FOREGROUND);
         BORDER_STROKE = new BasicStroke(1f);
-        label.setForeground(!textfield.getText().equals("@"+LABEL_TEXT.toUpperCase())?WARNING_FOREGROUND:PARENT_BACKGROUND);
+        label.setForeground(!getText().equals("@"+LABEL_TEXT.toUpperCase())?WARNING_FOREGROUND:PARENT_BACKGROUND);
         if(label.getIcon()!=null){
             label.setIcon(new ImageIcon(RENDERER.maskImage(((ImageIcon)label.getIcon()).getImage(), WARNING_FOREGROUND)));
         }
@@ -803,7 +787,7 @@ public class EsonText extends javax.swing.JPanel {
             label.setForeground(PARENT_BACKGROUND);
             textfield.setEchoChar((char) 0);
         }else{
-            textfield.setText(("@"+label.getText().toUpperCase()).equals(textfield.getText().trim().toUpperCase())?"":textfield.getText());
+            textfield.setText(("@"+label.getText().toUpperCase()).equals(getText().trim().toUpperCase())?"":getText());
             label.setForeground(LABEL_FOREGROUND);
         }
     }
@@ -820,7 +804,7 @@ public class EsonText extends javax.swing.JPanel {
             BORDER = NORMAL_BORDER;
             if(label.getForeground()!=ERROR_FOREGROUND || label.getForeground()!=WARNING_FOREGROUND){
                 if (HINT_SHOWN) {
-                    if (textfield.getText().trim().equals("")) {
+                    if (getText().trim().equals("")) {
                         textfield.setText("@" + LABEL_TEXT.toUpperCase());
                         textfield.setFont(HINT_FONT!=null?HINT_FONT:TEXT_FONT);
                         textfield.setForeground(HINT_FOREGROUND);
@@ -858,7 +842,7 @@ public class EsonText extends javax.swing.JPanel {
             setFieldForeground(TEXT_FOREGROUND);
             if (HINT_SHOWN) {
                 String txt = "@" + LABEL_TEXT.toUpperCase();
-                if (textfield.getText().equals(txt)) {
+                if (getText().equals(txt)) {
                     labely = 7;
                     refreshField();
                 }
@@ -986,6 +970,7 @@ public class EsonText extends javax.swing.JPanel {
         footer = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
+        setName("EsonText"); // NOI18N
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseDragged(java.awt.event.MouseEvent evt) {
                 formMouseDragged(evt);
@@ -999,9 +984,11 @@ public class EsonText extends javax.swing.JPanel {
 
         container.setOpaque(false);
         container.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 12, 0, 5));
+        container.setName("container"); // NOI18N
         container.setPreferredSize(new java.awt.Dimension(281, 40));
 
         peek.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        peek.setName("peek"); // NOI18N
         peek.setOpaque(true);
         peek.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
@@ -1013,6 +1000,7 @@ public class EsonText extends javax.swing.JPanel {
         });
 
         textfield.setBorder(null);
+        textfield.setName(""); // NOI18N
         textfield.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 textfieldKeyReleased(evt);
@@ -1026,6 +1014,7 @@ public class EsonText extends javax.swing.JPanel {
 
         button.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         button.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        button.setName("textfield_button"); // NOI18N
 
         javax.swing.GroupLayout containerLayout = new javax.swing.GroupLayout(container);
         container.setLayout(containerLayout);
@@ -1062,6 +1051,8 @@ public class EsonText extends javax.swing.JPanel {
         );
 
         footer.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 8, 0, 0));
+        footer.setName("footer"); // NOI18N
+        footer.setOpaque(true);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -1094,7 +1085,7 @@ public class EsonText extends javax.swing.JPanel {
 
     private void textfieldKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textfieldKeyReleased
         if(AS_PASSWORD){
-            boolean show = !textfield.getText().trim().equals("");
+            boolean show = !getText().trim().equals("");
             peek.setVisible(show);
             peek.setOpaque(false);
             ImageIcon icon = new javax.swing.ImageIcon(getClass().getResource("/json/asidera/images/eye_close.png"));

@@ -25,12 +25,6 @@ public class TableQueryWorker extends SwingWorker<Integer, String> {
         }
     }
     
-    public TableQueryWorker(JTable table, EsonProgress progress, Statement st, String sqlQuery, String columnNames[], boolean showCounter){
-        model = (DefaultTableModel)table.getModel();
-        isEsonTable = false;
-        setupValues(progress,st,sqlQuery,columnNames, showCounter);
-    }
-    
     public TableQueryWorker(EsonTable esonTable, Statement st, String sqlQuery, String columnNames[], boolean showCounter){
         this.esonTable = esonTable;
         isEsonTable = true;

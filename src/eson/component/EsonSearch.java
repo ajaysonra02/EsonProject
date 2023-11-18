@@ -7,7 +7,6 @@ package eson.component;
 
 import eson.component.table.EsonTable;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -19,13 +18,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.sql.Connection;
 import javax.swing.ImageIcon;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
 import eson.core.util.DataConnection;
 import eson.core.EsonProject;
 import eson.core.util.ImageRenderer;
-import eson.component.util.TableSearcher;
 import eson.component.table.TableQueryHolder;
 import eson.core.util.GaussianFilter;
 
@@ -49,10 +45,7 @@ public class EsonSearch extends javax.swing.JPanel {
                 SELECTION_BACKGROUND = new Color(75,110,175),
                 SELECTION_FOREGROUND = new Color(255,255,255);
     private int CORNER_RADIUS = 25;
-    private JTable JTABLE = null;
     private EsonTable ESON_TABLE = null;
-    private EsonProgress PROGRESS = null;
-    private TableSearcher SEARCHER = null;
     private TableQueryHolder TABLE_WORKER = null;
     protected GaussianFilter FILTER = null;
     private Image SEARCH_ICON = null;
@@ -75,6 +68,10 @@ public class EsonSearch extends javax.swing.JPanel {
         text.transferFocus();
     }
     
+    public JTextField getField(){
+        return text;
+    }
+    
     @Override
     public void setFont(Font font){
         super.setFont(font);
@@ -92,24 +89,12 @@ public class EsonSearch extends javax.swing.JPanel {
         return text.getText();
     }
     
-    public JTextField getField(){
-        return text;
-    }
-    
     @Override
     public Font getFont(){
         return text==null?super.getFont():text.getFont();
     }
     
-    public void setTable(JTable jtable){
-        JTABLE = jtable;
-        SEARCHER = new TableSearcher(text,JTABLE);
-        SEARCHER.startListener();
-        TABLE_WORKER = new TableQueryHolder(JTABLE,PROGRESS);
-        ((DefaultTableModel)jtable.getModel()).setRowCount(0);
-    }
-    
-    public void setEsonTable(EsonTable etable){
+    public void setTable(EsonTable etable){
         ESON_TABLE = etable;
         TABLE_WORKER = new TableQueryHolder(ESON_TABLE);
         etable.setEsonSearch(this);
@@ -123,11 +108,7 @@ public class EsonSearch extends javax.swing.JPanel {
         });
     }
     
-    public JTable getTable(){
-        return JTABLE;
-    }
-    
-    public EsonTable getEsonTable(){
+    public EsonTable getTable(){
         return ESON_TABLE;
     }
     
@@ -225,8 +206,6 @@ public class EsonSearch extends javax.swing.JPanel {
     }
     
     public void loadTable(Connection connection, String sqlQuery, String tableColumnNames[]){
-        showProgress(true);
-        PROGRESS.setValue(0);
         TABLE_WORKER.sqlWork(dataConnection.createScrollableStatement(connection),sqlQuery, tableColumnNames, showCounter);
     }
     
@@ -247,14 +226,7 @@ public class EsonSearch extends javax.swing.JPanel {
         return text.getHorizontalAlignment();
     }
     
-    private void showProgress(boolean flag){
-        if(flag){
-            
-        }
-    }
-    
     private void initConfiguration(){
-        PROGRESS = new EsonProgress();
         addFocusListener(new FocusListener() {
             @Override public void focusGained(FocusEvent e){ 
                 text.requestFocus();
@@ -278,7 +250,6 @@ public class EsonSearch extends javax.swing.JPanel {
         FOCUS_GAINED = false;
         repaint();
         if(text.getText().trim().equals("")){
-            if(SEARCHER!=null){SEARCHER.pauseListener();}
             text.setText("SEARCH");
             text.setForeground(HINT_FOREGROUND);
         }else{
@@ -296,14 +267,6 @@ public class EsonSearch extends javax.swing.JPanel {
         text.setCaretColor(GAINED_FOREGROUND);
         text.setForeground(GAINED_FOREGROUND);
         text.setBackground(GAINED_BACKGROUND);
-        if(SEARCHER!=null){
-            SEARCHER.startListener();
-        }
-    }
-    
-    @Override
-    public void setNextFocusableComponent(Component comp){
-        text.setNextFocusableComponent(comp);
     }
     
     private void applyQualityRenderingHints(Graphics2D g2d){

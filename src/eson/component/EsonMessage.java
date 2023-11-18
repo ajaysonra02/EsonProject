@@ -264,7 +264,6 @@ public final class EsonMessage extends javax.swing.JDialog{
             }
         });
 
-        decline.setButtonType(eson.component.EsonButton.EsonButtonType.ERROR);
         decline.setCornerRadius(5);
         decline.setText("NO");
         decline.addActionListener(new java.awt.event.ActionListener() {
@@ -328,8 +327,6 @@ public final class EsonMessage extends javax.swing.JDialog{
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    int x=0, y=0;
     
     private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
         animate();

@@ -301,12 +301,12 @@ public class EsonTable extends javax.swing.JPanel {
         }
     }
     
-    public Object getValueAt(int rowIndex, int column){
-        return tableHolder.getValueAt(rowIndex, column);
+    public Object getValueAt(int index, int column){
+        return ROWS.get(index).getColumn(column).getValue();
     }
     
-    public void setValueAt(Object object, int rowIndex, int column){
-        tableHolder.setValueAt(object, rowIndex, column);
+    public void setValueAt(Object object, int index, int column){
+        ROWS.get(index).getColumn(column).setValue(object);
     }
 
     public void removeRow(int index){
@@ -387,8 +387,12 @@ public class EsonTable extends javax.swing.JPanel {
         return VALUES;
     }
     
-    public void repopulate(){
+    public void refresh(){
         tableHolder.search("");
+    }
+    
+    public void prepareRowValues(Object[] obj){
+        VALUES.add(obj);
     }
     
     public void sort(int columnIndex, boolean ascending){
@@ -423,11 +427,7 @@ public class EsonTable extends javax.swing.JPanel {
      */
     public void setBodyBlurShown(boolean bodyBlurShown) {
         this.bodyBlurShown = bodyBlurShown;
-        if(bodyBlurShown){
-            esonBlur.blurComponent(bodyPane);
-        }else{
-            esonBlur.removeBlur();
-        }
+        esonBlur.blurComponent(bodyPane, bodyBlurShown);
     }
     
     public void setEsonSearch(EsonSearch search){
@@ -625,14 +625,14 @@ public class EsonTable extends javax.swing.JPanel {
             bodyBlurShown = false,
             GRID_SHOWN = false,
             actionEnabled = true;
-    protected List<Object[]> VALUES = new ArrayList<>();
-    protected List<Object[]> CURRENT_VALUES = new ArrayList<>();
-    protected final List<EsonTableRow> ROWS = new ArrayList<>();
-    protected final List<String> HEADER_COLUMNS = new ArrayList<>();
-    protected final List<Integer> COLUMN_WIDTHS = new ArrayList<>();
-    protected final List<Integer> COLUMN_ALIGNMENT = new ArrayList<>();
-    protected final List<Boolean> RESIZABLE_COLUMNS = new ArrayList<>();
-    protected final List<Object[]> COLUMNS = new ArrayList<>();
+    protected List<Object[]> VALUES = new ArrayList();
+    protected List<Object[]> CURRENT_VALUES = new ArrayList();
+    protected final List<EsonTableRow> ROWS = new ArrayList();
+    protected final List<String> HEADER_COLUMNS = new ArrayList();
+    protected final List<Integer> COLUMN_WIDTHS = new ArrayList();
+    protected final List<Integer> COLUMN_ALIGNMENT = new ArrayList();
+    protected final List<Boolean> RESIZABLE_COLUMNS = new ArrayList();
+    protected final List<Object[]> COLUMNS = new ArrayList();
     protected final EsonTableHolder tableHolder = new EsonTableHolder(this);
     protected final EsonBlur esonBlur = new EsonBlur(5,1f);
     protected EsonSearch esonSearch = null;
