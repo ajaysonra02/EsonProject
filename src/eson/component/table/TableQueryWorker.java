@@ -50,11 +50,11 @@ public class TableQueryWorker extends SwingWorker<Integer, String> {
             i++;
             loadMessage("LOADING DATA FROM SQL SERVER [ "+stringUtils.formatDecimal("###,###", i)+" of "+stringUtils.formatDecimal("###,###", maxSize)+" ]");
             failIfInterrupted();    
-            String rowString = "";                  
+            String rowString = "";                      
             for(String string:columnNames){
                 rowString += resultQuery.getString(string)+splitter;
             }
-            if(isPrepare){
+            if(!isPrepare){
                 esonTable.addRow(rowString.split(splitter));
             }else{
                 esonTable.prepareRowValues(rowString.split(splitter));
@@ -70,7 +70,6 @@ public class TableQueryWorker extends SwingWorker<Integer, String> {
     }
         
     private void loadMessage(String txt){
-        System.out.println(txt);
         if(label!=null){
             label.setText(txt);
         }

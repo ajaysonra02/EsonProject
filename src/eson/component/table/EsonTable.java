@@ -389,7 +389,7 @@ public class EsonTable extends javax.swing.JPanel {
     }
     
     public void refresh(){
-        tableHolder.search("");
+        tableHolder.repopulate();
     }
     
     public void prepareRowValues(Object[] obj){
@@ -448,8 +448,7 @@ public class EsonTable extends javax.swing.JPanel {
     }
     
     public void prepareTable(Connection connection, String sqlQuery, String tableColumnNames[],JLabel label){
-        System.out.println("PREPARE TABLE");
-//        tableHolder.prepareValues(connection, sqlQuery, tableColumnNames,label);
+        tableHolder.prepareValues(connection, sqlQuery, tableColumnNames,label);
     }
     
     public void loadTable(Connection connection, String sqlQuery, String tableColumnNames[]){

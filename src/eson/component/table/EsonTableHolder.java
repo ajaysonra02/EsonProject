@@ -86,15 +86,51 @@ public class EsonTableHolder extends Exception{
     protected void search(String KEY){
         if(!KEY.trim().equals(SEARCH_KEY)){
             resetRows();
-            SEARCH_KEY = KEY;
-            for (SearchWorker w : searchWorkers) {
-                w.stop(); w.cancel(true);
+            SEARCH_KEY = KEY.trim();
+            if(KEY.equals("")){
+                repopulate();
+            }else{
+                startSearch();
             }
-            searchWorkers.clear();
-            SearchWorker worker = new SearchWorker(KEY.trim().equals(""),table.VALUES);
-            worker.execute();
-            searchWorkers.add(worker);
         }
+    }
+    
+    protected List<TablePopulator> tablePopulator = new ArrayList<>();
+    protected void repopulate(){
+        for (TablePopulator w : tablePopulator) {
+            w.stop(); w.cancel(true);
+        }
+        tablePopulator.clear();
+        TablePopulator worker = new TablePopulator();
+        tablePopulator.add(worker);
+        worker.execute();
+    }
+    
+    protected class TablePopulator extends SwingWorker{
+        protected boolean STOP = false;
+        protected void stop(){ STOP = true; }    
+        @Override protected Object doInBackground() throws Exception {
+            table.setActionEnabled(false);
+            for(Object[] obj:table.VALUES){
+                if(STOP){ resetRows(); break; }
+                if(!insertRow(obj)){break;}
+            }
+            table.refreshViewPort();
+            table.scrollToTop();
+            table.FOOTER.setValue("TOTAL ROW",table.VALUES, table.VISIBLE_ROW_COUNT);
+            table.setActionEnabled(true);   
+            return 0;
+        }
+    }
+    
+    private void startSearch(){
+        for (SearchWorker w : searchWorkers) {
+            w.stop(); w.cancel(true);
+        }
+        searchWorkers.clear();
+        SearchWorker worker = new SearchWorker(SEARCH_KEY.equals(""), table.VALUES);
+        searchWorkers.add(worker);
+        worker.execute();
     }
     
     protected class SearchWorker extends SwingWorker{
@@ -106,11 +142,11 @@ public class EsonTableHolder extends Exception{
         }
         protected void stop(){ STOP = true; }      
         @Override protected Object doInBackground() throws Exception {
-            String key = SEARCH_KEY.toUpperCase().trim();
+            table.setActionEnabled(false);
+            String key = SEARCH_KEY.toUpperCase();
             List<Object[]> searchResult = table.VALUES.parallelStream()
                 .filter((element) -> element[1].toString().toUpperCase().trim().contains(key))
                 .collect(Collectors.toList());
-            table.setActionEnabled(false);
             for(Object[] obj:searchResult){
                 if(STOP){ resetRows(); break; }
                 if(!insertRow(obj)){break;}
