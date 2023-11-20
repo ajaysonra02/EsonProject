@@ -123,11 +123,15 @@ public class ImageRenderer extends GaussianFilter{
         applyQualityRenderingHints(g2d);
         g2d.setColor(Color.WHITE);
         g2d.drawImage(image,0,0,null);
-        g2d.setComposite(AlphaComposite.SrcAtop);
+        g2d.setComposite(AlphaComposite.SrcAtop);   
         g2d.setColor(color);
         g2d.fillRect(0, 0, masterWidth, masterHeight);
         g2d.dispose();
         return mask;
+    }
+    
+    public Image scaleImageInAspectRatio(Image img, int size){
+        return img.getScaledInstance(-1, size, Image.SCALE_DEFAULT);
     }
     
     public ImageIcon resizeIcon(Image image,int width, int height, Color color){

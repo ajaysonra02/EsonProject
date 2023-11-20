@@ -8,10 +8,8 @@ package eson.component.table;
 import eson.core.util.ResultSQL;
 import eson.core.util.StringUtils;
 import java.sql.Statement;
-import javax.swing.JTable;
 import javax.swing.SwingWorker;
-import javax.swing.table.DefaultTableModel;
-import eson.component.EsonProgress;
+import javax.swing.JLabel;
 
 /**
  *
@@ -25,113 +23,66 @@ public class TableQueryWorker extends SwingWorker<Integer, String> {
         }
     }
     
-    public TableQueryWorker(EsonTable esonTable, Statement st, String sqlQuery, String columnNames[], boolean showCounter){
+    public TableQueryWorker(EsonTable esonTable, Statement st, String sqlQuery, String columnNames[], JLabel label){
         this.esonTable = esonTable;
-        isEsonTable = true;
-        setupValues(progress,st,sqlQuery,columnNames, showCounter);
-    }
-    
-    private void setupValues(EsonProgress progress, Statement st, String sqlQuery, String columnNames[], boolean showCounter){
         this.columnNames = columnNames;
-        this.progress = progress;
-        this.showCounter = showCounter;
-        splitter = " : ";
-        stringUtils = new StringUtils();
+        this.label = label;
         STATEMENT = st;
         SQL_QUERY = sqlQuery;
+        splitter = " : ";
+        isPrepare = false;
     }
     
-    public void setColumns(String columnNames[]){
-        this.columnNames = columnNames;
-    }
-    
-    public void setTable(JTable table){
-        model = (DefaultTableModel)table.getModel();
-    }
-    
-    public void setProgressBar(EsonProgress progress){
-        this.progress = progress;
-    }
-    
-    public void setResultSQL(ResultSQL rs){
-        resultQuery = rs;
-    }
-    
-    public void setSplitter(String splitter){
-        this.splitter = splitter;
+    public TableQueryWorker(EsonTable esonTable, Statement st, String sqlQuery, String columnNames[], JLabel label, boolean isPrepare){
+        this(esonTable,st,sqlQuery,columnNames,label);
+        this.isPrepare = isPrepare;
     }
 
     @Override
     protected Integer doInBackground() throws Exception {
-        if(!isEsonTable){
-            loadJTable();
-        }else{
-            loadEsonTable();
-        }
-        return 1;
-    }
-    
-    private void loadJTable() throws Exception{
-        resultQuery = new ResultSQL(STATEMENT,SQL_QUERY);
-        failIfInterrupted();
-        int i = 0, maxSize = 0;
-        if(showCounter){ maxSize = resultQuery.getRowCount(); }
-        while(resultQuery.next()){
-            failIfInterrupted();
-            String rowString = "";
-            for(String string:columnNames){
-                rowString += resultQuery.getString(string)+splitter;
-            }
-            if(showCounter){
-                progress.setValue((i+1)*100/maxSize);
-                progress.setString(progress.getValue()+"%  -  ("+(i+1)+" out of "+maxSize+")");
-            }
-            if(i==0){
-                model.setRowCount(0);
-            }
-            i++;
-            model.addRow(rowString.split(splitter));
-        }
-        resultQuery.close();
-    }
-    
-    private void loadEsonTable() throws Exception{
-        esonTable.showLoading("FETCHING DATA FROM SQL SERVER");
+        esonTable.clearRows();
+        String txt = "FETCHING DATA FROM SQL SERVER";
+        if(!isPrepare){esonTable.showLoading(txt);}else{loadMessage(txt);}
         resultQuery = new ResultSQL(STATEMENT, SQL_QUERY);
         failIfInterrupted();
-        int i = 0, maxSize = 0;
-        if(showCounter){ maxSize = resultQuery.getRowCount(); }
+        int i = 0, maxSize = resultQuery.getRowCount();
         while(resultQuery.next()){
             i++;
-            if(showCounter){
-                esonTable.setLoadingText("LOADING DATA FROM SQL SERVER [ "+stringUtils.formatDecimal("###,###", i)+" of "+stringUtils.formatDecimal("###,###", maxSize)+" ]");
-            }
+            loadMessage("LOADING DATA FROM SQL SERVER [ "+stringUtils.formatDecimal("###,###", i)+" of "+stringUtils.formatDecimal("###,###", maxSize)+" ]");
             failIfInterrupted();    
             String rowString = "";                  
             for(String string:columnNames){
                 rowString += resultQuery.getString(string)+splitter;
             }
-            if(i==1){
-                if(!showCounter){esonTable.setLoadingText("LOADING TABLE ROWS");}
-                esonTable.clearRows();
+            if(isPrepare){
+                esonTable.addRow(rowString.split(splitter));
+            }else{
+                esonTable.prepareRowValues(rowString.split(splitter));
             }
-            esonTable.addRow(rowString.split(splitter));
         }
         resultQuery.close();
-        esonTable.scrollToTop();
-        esonTable.getFooter().setValue("TOTAL ROW", esonTable.getValues(), esonTable.getMaximumVisibleRowCount());
-        esonTable.closeLoading();
+        if(!isPrepare){
+            esonTable.scrollToTop();
+            esonTable.getFooter().setValue("TOTAL ROW", esonTable.getValues(), esonTable.getMaximumVisibleRowCount());
+            esonTable.closeLoading();
+        }else{esonTable.pushPreparedValues();}
+        return 1;
     }
         
-    private EsonProgress progress = null;
-    private DefaultTableModel model = null;
+    private void loadMessage(String txt){
+        System.out.println(txt);
+        if(label!=null){
+            label.setText(txt);
+        }
+    }
+        
+    private ResultSQL resultQuery = null;
+    private Statement STATEMENT = null;
+    private String SQL_QUERY = "";
     private String splitter = " : ";
     private String columnNames[] = null;
-    private EsonTable esonTable;
-    private boolean isEsonTable = false;
-    private boolean showCounter;
-    private StringUtils stringUtils;
-    ResultSQL resultQuery = null;
-    Statement STATEMENT = null;
-    String SQL_QUERY = "";
+    private EsonTable esonTable = null;
+    private JLabel label = null;
+    private final StringUtils stringUtils = new StringUtils();
+    private boolean isPrepare = false;
 }

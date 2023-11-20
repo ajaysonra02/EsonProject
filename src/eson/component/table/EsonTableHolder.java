@@ -5,6 +5,7 @@
 package eson.component.table;
 
 import eson.component.EsonSearch;
+import eson.core.util.DataConnection;
 import eson.core.util.ImageRenderer;
 import eson.core.util.LoadingAnimation;
 import java.awt.Color;
@@ -14,6 +15,7 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +39,7 @@ public class EsonTableHolder extends Exception{
     
     protected EsonTableHolder(EsonTable table){
         this.table = table;
+        queryHolder = new TableQueryHolder(table);
     }
     
     protected List<TableViewWorker> viewWorkers = new ArrayList<>();
@@ -453,6 +456,7 @@ public class EsonTableHolder extends Exception{
     protected void clearRows(){
         table.ROW_COUNTER = 0;
         table.VALUES.clear();
+        table.PREPARED_VALUES.clear();
         table.ROWS.clear();
         table.viewport.removeAll();
         table.FOOTER.setValue("TOTAL ROW",table.VALUES, table.VISIBLE_ROW_COUNT);
@@ -535,6 +539,17 @@ public class EsonTableHolder extends Exception{
         return table.ROWS.get(rowIndex).getColumn(column).getValue();
     }
     
+    protected void prepareValues(Connection connection, String sqlQuery, String tableColumnNames[], JLabel label){
+        clearRows();
+        queryHolder.prepareTable(dataConnection.createScrollableStatement(connection),sqlQuery, tableColumnNames, label);
+    }
+    
+    public void loadTable(Connection connection, String sqlQuery, String tableColumnNames[]){
+        queryHolder.loadTable(dataConnection.createScrollableStatement(connection),sqlQuery, tableColumnNames, table.loadingMessage);
+    }
+    
     protected EsonTable table = null;
+    private TableQueryHolder queryHolder = null;
+    private final DataConnection dataConnection = new DataConnection();
     private final LoadingAnimation loadingHolder = new LoadingAnimation();
 }

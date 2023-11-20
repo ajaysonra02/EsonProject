@@ -4,8 +4,14 @@
  */
 package eson.core.util;
 
+import java.awt.Color;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
@@ -16,9 +22,10 @@ import javax.swing.Timer;
  */
 public class LoadingAnimation{
     
-    private int loadingCounter = 0;
+    private int simpleCounter = 0;
     private boolean isLoading = false;
     private JLabel label = null;
+    private ImageRenderer RENDERER = new ImageRenderer();
     
     public void stopLoading(){
         isLoading = false;
@@ -30,13 +37,13 @@ public class LoadingAnimation{
     
     public void simpleLoading(JLabel label, int charCount){
         this.label = label;
-        loadingCounter = 0;
+        simpleCounter = 0;
         isLoading = true;
-        initLoadInfo(charCount);
-        simpleLoading.start();
+        initSimpleLoading(charCount);
+        simpleTimer.start();
     }
     
-    private void initLoadInfo(int length){
+    private void initSimpleLoading(int length){
         loadInfo = new String[length*2];
         char a = '●', b = '◌';
         int aCount = 0, bCount = length;
@@ -57,15 +64,69 @@ public class LoadingAnimation{
         return txt;
     }
     
-    protected String[] loadInfo = new String[]{"◌ ◌ ◌","● ◌ ◌","● ● ◌","● ● ●","◌ ● ●","◌ ◌ ●"};
-    protected javax.swing.Timer simpleLoading = new javax.swing.Timer(300, new ActionListener() {
+    public Image[] getWindowsLoadingImages(){
+        Image[] retval = new Image[27];
+        for(int i=0;i<retval.length;i++){
+            retval[i] = new ImageIcon(getClass().getResource("/json/asidera/images/loading/win"+(i+1)+".png")).getImage();
+        }
+        return retval;
+    }
+    
+    public Image[] getWindowsLoadingImages(int size, Color color){
+        Image[] retval = new Image[27];
+        for(int i=0;i<retval.length;i++){
+            Image img = new ImageIcon(getClass().getResource("/json/asidera/images/loading/win"+(i+1)+".png")).getImage();
+            retval[i] = RENDERER.maskImage(img,size,size,color);
+        }
+        return retval;
+    }
+    
+    protected String[] loadInfo;
+    protected javax.swing.Timer simpleTimer = new javax.swing.Timer(300, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(isLoading){
-                label.setText(loadInfo[loadingCounter]);
-                loadingCounter++;
-                if(loadingCounter==loadInfo.length){
-                    loadingCounter = 0;
+                label.setText(loadInfo[simpleCounter]);
+                simpleCounter++;
+                if(simpleCounter==loadInfo.length){
+                    simpleCounter = 0;
+                }
+            }else{((Timer)e.getSource()).stop();}
+        }
+    });
+    
+    private Image[] loadingImage;
+    private int windowsCounter, iconSize, colorCounter;
+    private List<Color> windowsColor = new ArrayList<>();
+    public void windowsLoading(JLabel label, Color[] color, int iconSize){
+        this.label = label;
+        this.iconSize = iconSize;
+        windowsColor.clear();
+        windowsColor.addAll(Arrays.asList(color));
+        windowsCounter = 0;
+        isLoading = true;
+        colorCounter = 0;
+        loadingImage = new Image[27];
+        for(int i=0;i<loadingImage.length;i++){
+            loadingImage[i] = new ImageIcon(getClass().getResource("/json/asidera/images/loading/win"+(i+1)+".png")).getImage();
+        }
+        windowsTimer.start();
+    }
+    
+    public void windowsLoading(JLabel label, Color color, int iconSize){
+        windowsLoading(label,new Color[]{color},iconSize);
+    }
+    
+    protected javax.swing.Timer windowsTimer = new javax.swing.Timer(50, new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {    
+            if(isLoading){  
+                label.setIcon(RENDERER.resizeIcon(loadingImage[windowsCounter],iconSize, iconSize, windowsColor.get(colorCounter)));
+                label.repaint();
+                windowsCounter++;
+                if(windowsCounter==loadingImage.length){
+                    colorCounter = colorCounter<windowsColor.size()-1?(colorCounter+1):0;
+                    windowsCounter = 0;
                 }
             }else{((Timer)e.getSource()).stop();}
         }

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
+import java.sql.Connection;
 /**
  *
  * @author WAWA ESON
@@ -392,7 +393,11 @@ public class EsonTable extends javax.swing.JPanel {
     }
     
     public void prepareRowValues(Object[] obj){
-        VALUES.add(obj);
+        PREPARED_VALUES.add(obj);
+    }
+    
+    public void pushPreparedValues(){
+        VALUES = PREPARED_VALUES;
     }
     
     public void sort(int columnIndex, boolean ascending){
@@ -440,6 +445,15 @@ public class EsonTable extends javax.swing.JPanel {
     
     public void viewPage(List<Object[]> values,int pageNumber){
         tableHolder.viewPage(values, pageNumber);
+    }
+    
+    public void prepareTable(Connection connection, String sqlQuery, String tableColumnNames[],JLabel label){
+        System.out.println("PREPARE TABLE");
+//        tableHolder.prepareValues(connection, sqlQuery, tableColumnNames,label);
+    }
+    
+    public void loadTable(Connection connection, String sqlQuery, String tableColumnNames[]){
+        tableHolder.loadTable(connection, sqlQuery, tableColumnNames);
     }
     
     @SuppressWarnings("unchecked")
@@ -625,14 +639,15 @@ public class EsonTable extends javax.swing.JPanel {
             bodyBlurShown = false,
             GRID_SHOWN = false,
             actionEnabled = true;
-    protected List<Object[]> VALUES = new ArrayList();
-    protected List<Object[]> CURRENT_VALUES = new ArrayList();
-    protected final List<EsonTableRow> ROWS = new ArrayList();
-    protected final List<String> HEADER_COLUMNS = new ArrayList();
-    protected final List<Integer> COLUMN_WIDTHS = new ArrayList();
-    protected final List<Integer> COLUMN_ALIGNMENT = new ArrayList();
-    protected final List<Boolean> RESIZABLE_COLUMNS = new ArrayList();
-    protected final List<Object[]> COLUMNS = new ArrayList();
+    protected List<Object[]> VALUES = new ArrayList<>();
+    protected List<Object[]> CURRENT_VALUES = new ArrayList<>();
+    protected List<Object[]> PREPARED_VALUES = new ArrayList<>();
+    protected final List<EsonTableRow> ROWS = new ArrayList<>();
+    protected final List<String> HEADER_COLUMNS = new ArrayList<>();
+    protected final List<Integer> COLUMN_WIDTHS = new ArrayList<>();
+    protected final List<Integer> COLUMN_ALIGNMENT = new ArrayList<>();
+    protected final List<Boolean> RESIZABLE_COLUMNS = new ArrayList<>();
+    protected final List<Object[]> COLUMNS = new ArrayList<>();
     protected final EsonTableHolder tableHolder = new EsonTableHolder(this);
     protected final EsonBlur esonBlur = new EsonBlur(5,1f);
     protected EsonSearch esonSearch = null;

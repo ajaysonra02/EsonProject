@@ -16,7 +16,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.sql.Connection;
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import eson.core.util.DataConnection;
@@ -46,7 +45,6 @@ public class EsonSearch extends javax.swing.JPanel {
                 SELECTION_FOREGROUND = new Color(255,255,255);
     private int CORNER_RADIUS = 25;
     private EsonTable ESON_TABLE = null;
-    private TableQueryHolder TABLE_WORKER = null;
     protected GaussianFilter FILTER = null;
     private Image SEARCH_ICON = null;
     private ImageRenderer RENDERER = null;
@@ -54,7 +52,6 @@ public class EsonSearch extends javax.swing.JPanel {
     
     public EsonSearch() {
         FILTER = new GaussianFilter();
-        dataConnection = new DataConnection();
         SEARCH_ICON = new ImageIcon(getClass().getResource("/json/asidera/images/search.png")).getImage();
         RENDERER = new ImageRenderer();
         initComponents();
@@ -96,7 +93,6 @@ public class EsonSearch extends javax.swing.JPanel {
     
     public void setTable(EsonTable etable){
         ESON_TABLE = etable;
-        TABLE_WORKER = new TableQueryHolder(ESON_TABLE);
         etable.setEsonSearch(this);
         for(KeyListener l:text.getKeyListeners()){ text.removeKeyListener(l); }
         text.addKeyListener(new KeyListener(){
@@ -203,19 +199,6 @@ public class EsonSearch extends javax.swing.JPanel {
     
     public Color getHintForeground(){
         return HINT_FOREGROUND;
-    }
-    
-    public void loadTable(Connection connection, String sqlQuery, String tableColumnNames[]){
-        TABLE_WORKER.sqlWork(dataConnection.createScrollableStatement(connection),sqlQuery, tableColumnNames, showCounter);
-    }
-    
-    private boolean showCounter = false;
-    public void showLoadCounter(boolean flag){
-        showCounter = flag;
-    }
-    
-    public boolean isLoadCounterShown(){
-        return showCounter;
     }
     
     public void setHorizontalAlignment(int alignment){
