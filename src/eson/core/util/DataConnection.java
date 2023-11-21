@@ -45,6 +45,12 @@ public class DataConnection {
         }catch(SQLException e){ return null;}
     }
     
+    public Statement createScrollableStatement(){
+        try{
+            return getConnection().createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+        }catch(SQLException e){ return null;}
+    }
+    
     public void setDatabaseConfiguration(String NAME, String ADDRESS, String PORT, String USERNAME, String PASSWORD){
         DATABASE_NAME = NAME;
         DATABASE_ADDRESS = ADDRESS;

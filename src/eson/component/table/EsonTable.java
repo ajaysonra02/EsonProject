@@ -114,7 +114,7 @@ public class EsonTable extends javax.swing.JPanel {
         return GRID_COLOR;
     }
     
-    public void setRowBackgrounds(Color c[]){
+    public void setRowBackgrounds(Color c[]){       
         ROW_BACKGROUNDS = c;
         Color a = ROW_BACKGROUNDS[0];
         a = new Color(a.getRed(), a.getGreen(), a.getBlue(), 200);
@@ -126,6 +126,8 @@ public class EsonTable extends javax.swing.JPanel {
         ROW_FOREGROUNDS = c;
         loadingMessage.setForeground(ROW_FOREGROUNDS[0]);
         loading.setForeground(ROW_FOREGROUNDS[0]);
+        prepareMessage.setForeground(c[0]);
+        prepareLoading.setForeground(c[0]);
     }
     public Color[] getRowForegrounds(){
         return ROW_FOREGROUNDS;
@@ -324,6 +326,7 @@ public class EsonTable extends javax.swing.JPanel {
     
     public void setBodyColor(Color c){
         BODY_COLOR = c;
+        preparePanel.setBackground(c);
         tableHolder.updateBodyColor();
     }
     
@@ -392,14 +395,6 @@ public class EsonTable extends javax.swing.JPanel {
         tableHolder.repopulate();
     }
     
-    public void prepareRowValues(Object[] obj){
-        PREPARED_VALUES.add(obj);
-    }
-    
-    public void pushPreparedValues(){
-        VALUES = PREPARED_VALUES;
-    }
-    
     public void sort(int columnIndex, boolean ascending){
         tableHolder.sort(columnIndex, ascending);
     }
@@ -418,6 +413,14 @@ public class EsonTable extends javax.swing.JPanel {
     
     public void closeLoading(){
         tableHolder.closeLoading();
+    }
+    
+    public void showPreparing(String txt){
+        tableHolder.showPreparing(txt);
+    }
+    
+    public void closePreparing(){
+        tableHolder.closePreparing();
     }
     
     /**
@@ -447,22 +450,42 @@ public class EsonTable extends javax.swing.JPanel {
         tableHolder.viewPage(values, pageNumber);
     }
     
-    public void prepareTable(Connection connection, String sqlQuery, String tableColumnNames[],JLabel label){
-        tableHolder.prepareValues(connection, sqlQuery, tableColumnNames,label);
+    public void prepareTable(Connection connection, String sqlQuery, String tableColumnNames[]){
+        donePreparing = false;
+        tableHolder.prepareValues(connection, sqlQuery, tableColumnNames); 
     }
     
     public void loadTable(Connection connection, String sqlQuery, String tableColumnNames[]){
         tableHolder.loadTable(connection, sqlQuery, tableColumnNames);
     }
     
+    public void prepareRowValues(Object[] obj){
+        PREPARED_VALUES.add(obj);
+    }
+    
+    public void pushPreparedValues(boolean refresh){
+        donePreparing = true;
+        VALUES = PREPARED_VALUES;
+        if(refresh){
+            refresh();
+        }
+    }
+    
+    public boolean isDonePreparing(){
+        return donePreparing;
+    }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        esonProjectCover = new javax.swing.JPanel();
+        loadingPanel = new javax.swing.JPanel();
         loadingMessage = new javax.swing.JLabel();
         loading = new javax.swing.JLabel();
         loadingIcon = new javax.swing.JLabel();
+        preparePanel = new javax.swing.JPanel();
+        prepareMessage = new javax.swing.JLabel();
+        prepareLoading = new javax.swing.JLabel();
         header = new javax.swing.JPanel();
         footer = new javax.swing.JPanel(){
 
@@ -478,7 +501,7 @@ public class EsonTable extends javax.swing.JPanel {
         scroll = new javax.swing.JScrollPane();
         viewport = new javax.swing.JPanel();
 
-        esonProjectCover.setOpaque(false);
+        loadingPanel.setOpaque(false);
 
         loadingMessage.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         loadingMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -491,17 +514,17 @@ public class EsonTable extends javax.swing.JPanel {
         loadingIcon.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);
         loadingIcon.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 5, 1));
 
-        javax.swing.GroupLayout esonProjectCoverLayout = new javax.swing.GroupLayout(esonProjectCover);
-        esonProjectCover.setLayout(esonProjectCoverLayout);
-        esonProjectCoverLayout.setHorizontalGroup(
-            esonProjectCoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout loadingPanelLayout = new javax.swing.GroupLayout(loadingPanel);
+        loadingPanel.setLayout(loadingPanelLayout);
+        loadingPanelLayout.setHorizontalGroup(
+            loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(loading, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
             .addComponent(loadingMessage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(loadingIcon, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
-        esonProjectCoverLayout.setVerticalGroup(
-            esonProjectCoverLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(esonProjectCoverLayout.createSequentialGroup()
+        loadingPanelLayout.setVerticalGroup(
+            loadingPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(loadingPanelLayout.createSequentialGroup()
                 .addContainerGap(82, Short.MAX_VALUE)
                 .addComponent(loadingIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
@@ -509,6 +532,29 @@ public class EsonTable extends javax.swing.JPanel {
                 .addGap(0, 0, 0)
                 .addComponent(loading, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(82, Short.MAX_VALUE))
+        );
+
+        prepareMessage.setFont(new java.awt.Font("Dialog", 0, 18)); // NOI18N
+        prepareMessage.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        prepareMessage.setText("PREPARING YOUR DATA");
+
+        prepareLoading.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+
+        javax.swing.GroupLayout preparePanelLayout = new javax.swing.GroupLayout(preparePanel);
+        preparePanel.setLayout(preparePanelLayout);
+        preparePanelLayout.setHorizontalGroup(
+            preparePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(prepareMessage, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+            .addComponent(prepareLoading, javax.swing.GroupLayout.DEFAULT_SIZE, 460, Short.MAX_VALUE)
+        );
+        preparePanelLayout.setVerticalGroup(
+            preparePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(preparePanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(prepareLoading, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(prepareMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(56, Short.MAX_VALUE))
         );
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -597,12 +643,15 @@ public class EsonTable extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JPanel bodyPane;
-    protected javax.swing.JPanel esonProjectCover;
     protected javax.swing.JPanel footer;
     protected javax.swing.JPanel header;
     protected javax.swing.JLabel loading;
     protected javax.swing.JLabel loadingIcon;
     protected javax.swing.JLabel loadingMessage;
+    protected javax.swing.JPanel loadingPanel;
+    protected javax.swing.JLabel prepareLoading;
+    protected javax.swing.JLabel prepareMessage;
+    protected javax.swing.JPanel preparePanel;
     protected javax.swing.JScrollPane scroll;
     protected javax.swing.JPanel viewport;
     // End of variables declaration//GEN-END:variables
@@ -637,7 +686,8 @@ public class EsonTable extends javax.swing.JPanel {
             HEADER_MIN_UPDATED = false,
             bodyBlurShown = false,
             GRID_SHOWN = false,
-            actionEnabled = true;
+            actionEnabled = true,
+            donePreparing = false;
     protected List<Object[]> VALUES = new ArrayList<>();
     protected List<Object[]> CURRENT_VALUES = new ArrayList<>();
     protected List<Object[]> PREPARED_VALUES = new ArrayList<>();

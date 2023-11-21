@@ -138,10 +138,11 @@ public class EsonBlur extends LayerUI<Component> {
     
     private Container CONTAINER = null;
     private Component VIEW = null;
-    private boolean exitOnHover = false, actionEnabled = false;
+    private boolean exitOnHover = false, actionEnabled = false, isBlur = false;
     protected void showBlur(){
         VIEW = null;
         if(CONTAINER.getComponentCount()>0){
+            isBlur = true;
             VIEW = CONTAINER.getComponent(0);
             JLayer<Component> layer = new JLayer<>(VIEW, this);
             if(actionEnabled){
@@ -163,7 +164,8 @@ public class EsonBlur extends LayerUI<Component> {
     }
     
     protected void removeBlur(){
-        if(VIEW!=null){
+        if(isBlur){
+            isBlur = false;
             CONTAINER.removeAll();
             VIEW.setSize(CONTAINER.getSize());
             CONTAINER.add(VIEW);

@@ -9,7 +9,6 @@ import eson.core.util.ResultSQL;
 import eson.core.util.StringUtils;
 import java.sql.Statement;
 import javax.swing.SwingWorker;
-import javax.swing.JLabel;
 
 /**
  *
@@ -17,62 +16,67 @@ import javax.swing.JLabel;
  */
 public class TableQueryWorker extends SwingWorker<Integer, String> {
     
-    private static void failIfInterrupted() throws InterruptedException{
-        if(Thread.currentThread().isInterrupted()){
-            throw new InterruptedException("Data Query Interrupted");
-        }
-    }
-    
-    public TableQueryWorker(EsonTable esonTable, Statement st, String sqlQuery, String columnNames[], JLabel label){
-        this.esonTable = esonTable;
+    public TableQueryWorker(EsonTable esonTable, Statement st, String sqlQuery, String columnNames[]){
+        this.table = esonTable;
         this.columnNames = columnNames;
-        this.label = label;
         STATEMENT = st;
         SQL_QUERY = sqlQuery;
         splitter = " : ";
         isPrepare = false;
     }
     
-    public TableQueryWorker(EsonTable esonTable, Statement st, String sqlQuery, String columnNames[], JLabel label, boolean isPrepare){
-        this(esonTable,st,sqlQuery,columnNames,label);
+    public TableQueryWorker(EsonTable esonTable, Statement scrollableStatement, String sqlQuery, String columnNames[], boolean isPrepare){
+        this(esonTable,scrollableStatement,sqlQuery,columnNames);
         this.isPrepare = isPrepare;
     }
 
     @Override
     protected Integer doInBackground() throws Exception {
-        esonTable.clearRows();
-        String txt = "FETCHING DATA FROM SQL SERVER";
-        if(!isPrepare){esonTable.showLoading(txt);}else{loadMessage(txt);}
+        if(isPrepare){
+            return prepare();
+        }else{
+            return load();
+        }
+    }
+    
+    private int prepare() throws Exception{
+        table.clearRows();
+        table.showPreparing("PREPARING TABLE DATA");
         resultQuery = new ResultSQL(STATEMENT, SQL_QUERY);
-        failIfInterrupted();
         int i = 0, maxSize = resultQuery.getRowCount();
         while(resultQuery.next()){
             i++;
-            loadMessage("LOADING DATA FROM SQL SERVER [ "+stringUtils.formatDecimal("###,###", i)+" of "+stringUtils.formatDecimal("###,###", maxSize)+" ]");
-            failIfInterrupted();    
             String rowString = "";                      
             for(String string:columnNames){
                 rowString += resultQuery.getString(string)+splitter;
             }
-            if(!isPrepare){
-                esonTable.addRow(rowString.split(splitter));
-            }else{
-                esonTable.prepareRowValues(rowString.split(splitter));
-            }
+            table.prepareRowValues(rowString.split(splitter));
         }
         resultQuery.close();
-        if(!isPrepare){
-            esonTable.scrollToTop();
-            esonTable.getFooter().setValue("TOTAL ROW", esonTable.getValues(), esonTable.getMaximumVisibleRowCount());
-            esonTable.closeLoading();
-        }else{esonTable.pushPreparedValues();}
+        table.closePreparing();
+        table.pushPreparedValues(true);
         return 1;
     }
-        
-    private void loadMessage(String txt){
-        if(label!=null){
-            label.setText(txt);
+    
+    private int load() throws Exception{
+        table.clearRows();
+        table.showLoading("FETCHING DATA FROM SQL SERVER");
+        resultQuery = new ResultSQL(STATEMENT, SQL_QUERY);
+        int i = 0, maxSize = resultQuery.getRowCount();
+        while(resultQuery.next()){
+            i++;
+            table.setLoadingText("LOADING DATA FROM SQL SERVER [ "+stringUtils.formatDecimal("###,###", i)+" of "+stringUtils.formatDecimal("###,###", maxSize)+" ]");
+            String rowString = ""; 
+            for(String string:columnNames){
+                rowString += resultQuery.getString(string)+splitter;
+            }
+            table.addRow(rowString.split(splitter));
         }
+        resultQuery.close();
+        table.scrollToTop();
+        table.getFooter().setValue("TOTAL ROW", table.getValues(), table.getMaximumVisibleRowCount());
+        table.closeLoading();
+        return 1;
     }
         
     private ResultSQL resultQuery = null;
@@ -80,8 +84,7 @@ public class TableQueryWorker extends SwingWorker<Integer, String> {
     private String SQL_QUERY = "";
     private String splitter = " : ";
     private String columnNames[] = null;
-    private EsonTable esonTable = null;
-    private JLabel label = null;
+    private EsonTable table = null;
     private final StringUtils stringUtils = new StringUtils();
     private boolean isPrepare = false;
 }

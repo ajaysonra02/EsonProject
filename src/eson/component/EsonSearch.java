@@ -21,7 +21,6 @@ import javax.swing.JTextField;
 import eson.core.util.DataConnection;
 import eson.core.EsonProject;
 import eson.core.util.ImageRenderer;
-import eson.component.table.TableQueryHolder;
 import eson.core.util.GaussianFilter;
 
 /**
@@ -48,7 +47,6 @@ public class EsonSearch extends javax.swing.JPanel {
     protected GaussianFilter FILTER = null;
     private Image SEARCH_ICON = null;
     private ImageRenderer RENDERER = null;
-    private DataConnection dataConnection = null;
     
     public EsonSearch() {
         FILTER = new GaussianFilter();

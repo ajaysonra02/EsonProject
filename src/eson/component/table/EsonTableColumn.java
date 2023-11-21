@@ -60,6 +60,7 @@ public class EsonTableColumn extends JPanel {
                         repaint();
                         TABLE.sort(columnIndex, ascending);
                         ascending = !ascending;
+                        TABLE.closeLoading();
                     }
                 }
                 @Override public void mouseEntered(MouseEvent e) { }

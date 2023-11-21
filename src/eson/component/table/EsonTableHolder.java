@@ -15,18 +15,24 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
 import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
+import static javax.swing.SwingWorker.StateValue.DONE;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -39,7 +45,6 @@ public class EsonTableHolder extends Exception{
     
     protected EsonTableHolder(EsonTable table){
         this.table = table;
-        queryHolder = new TableQueryHolder(table);
     }
     
     protected List<TableViewWorker> viewWorkers = new ArrayList<>();
@@ -97,6 +102,7 @@ public class EsonTableHolder extends Exception{
     
     protected List<TablePopulator> tablePopulator = new ArrayList<>();
     protected void repopulate(){
+        resetRows();
         for (TablePopulator w : tablePopulator) {
             w.stop(); w.cancel(true);
         }
@@ -111,7 +117,7 @@ public class EsonTableHolder extends Exception{
         protected void stop(){ STOP = true; }    
         @Override protected Object doInBackground() throws Exception {
             table.setActionEnabled(false);
-            for(Object[] obj:table.VALUES){
+            for(Object[] obj:table.VALUES){ 
                 if(STOP){ resetRows(); break; }
                 if(!insertRow(obj)){break;}
             }
@@ -202,10 +208,10 @@ public class EsonTableHolder extends Exception{
         if(!loadingHolder.isLoading()){
             table.setBodyBlurShown(true);
             table.loadingMessage.setText(message);
-            table.esonProjectCover.setSize(table.bodyPane.getSize());
-            table.esonProjectCover.setLocation(table.bodyPane.getLocation());
-            table.add(table.esonProjectCover, 0);
-            table.esonProjectCover.setVisible(true);
+            table.loadingPanel.setSize(table.bodyPane.getSize());
+            table.loadingPanel.setLocation(table.bodyPane.getLocation());
+            table.add(table.loadingPanel, 0);
+            table.loadingPanel.setVisible(true);
             table.revalidate(); table.repaint();
             loadingHolder.simpleLoading(table.loading, 3);
         }
@@ -214,11 +220,31 @@ public class EsonTableHolder extends Exception{
     protected void closeLoading(){
         table.setActionEnabled(true);
         loadingHolder.stopLoading();
-        if(table.esonProjectCover.isShowing()){
-            table.remove(table.esonProjectCover);
+        table.remove(table.loadingPanel);
+        table.repaint();
+        table.setBodyBlurShown(false);
+    }
+    
+    protected void showPreparing(String txt){
+        table.setActionEnabled(false);
+        table.prepareMessage.setText(txt);
+        if(!loadingHolder.isLoading()){
+            table.preparePanel.setSize(table.bodyPane.getSize());
+            table.preparePanel.setLocation(table.bodyPane.getLocation());
+            table.add(table.preparePanel, 0);
+            table.preparePanel.setVisible(true);
+            table.revalidate();
             table.repaint();
-            table.setBodyBlurShown(false);
+            loadingHolder.windowsLoading(table.prepareLoading, table.getRowForegrounds(), 55);
         }
+    }
+    
+    protected void closePreparing(){
+        table.setActionEnabled(true);
+        loadingHolder.stopLoading();
+        table.remove(table.preparePanel);
+        table.repaint();
+        table.setBodyBlurShown(false);
     }
     
     protected int compareInstances(Object a, Object b){
@@ -270,7 +296,7 @@ public class EsonTableHolder extends Exception{
         table.addColumn("esonColumn5", 100, true,JLabel.CENTER);
         initScrollUI();
         initViewPort();
-        table.esonProjectCover.setOpaque(false);
+        table.loadingPanel.setOpaque(false);
         table.setActionEnabled(true);
         table.FOOTER = new EsonTableFooter(table,table.FOOTER_HEIGHT);
         refreshFooter();
@@ -575,17 +601,34 @@ public class EsonTableHolder extends Exception{
         return table.ROWS.get(rowIndex).getColumn(column).getValue();
     }
     
-    protected void prepareValues(Connection connection, String sqlQuery, String tableColumnNames[], JLabel label){
+    protected void prepareValues(Connection connection, String sqlQuery, String tableColumnNames[]){
         clearRows();
-        queryHolder.prepareTable(dataConnection.createScrollableStatement(connection),sqlQuery, tableColumnNames, label);
+        loadTable(dataConnection.createScrollableStatement(connection),sqlQuery, tableColumnNames, true);
     }
     
     public void loadTable(Connection connection, String sqlQuery, String tableColumnNames[]){
-        queryHolder.loadTable(dataConnection.createScrollableStatement(connection),sqlQuery, tableColumnNames, table.loadingMessage);
+        loadTable(dataConnection.createScrollableStatement(connection),sqlQuery, tableColumnNames, false);
     }
     
+    private void loadTable(Statement st, String sqlQuery, String queryTableColumnNames[], boolean isPrepare){
+        sqlWorker = new TableQueryWorker(table, st,sqlQuery, queryTableColumnNames, isPrepare);
+        sqlWorker.addPropertyChangeListener((PropertyChangeEvent evt) -> {
+            switch (evt.getPropertyName()) {
+                case "state" -> {
+                    switch ((SwingWorker.StateValue) evt.getNewValue()) {
+                        case DONE -> {  
+                            try {
+                                sqlWorker.get();
+                            } catch (final CancellationException | InterruptedException | ExecutionException e) {
+                                JOptionPane.showMessageDialog(null, "Query Failed!!", "EsonProject", JOptionPane.ERROR_MESSAGE);
+                            }
+                            sqlWorker = null;
+        }}}}});
+        sqlWorker.execute();
+    }
+    
+    private TableQueryWorker sqlWorker;
     protected EsonTable table = null;
-    private TableQueryHolder queryHolder = null;
     private final DataConnection dataConnection = new DataConnection();
     private final LoadingAnimation loadingHolder = new LoadingAnimation();
 }
