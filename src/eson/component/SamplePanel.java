@@ -162,25 +162,24 @@ public class SamplePanel extends javax.swing.JPanel {
      */
     public SamplePanel() {
         initComponents();
-        addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override public void mouseExited(MouseEvent e) {
-            }
-        });
+//        addMouseListener(new MouseAdapter() {
+//            @Override public void mouseEntered(MouseEvent e) {
+//            }
+//
+//            @Override public void mouseExited(MouseEvent e) {
+//            }
+//        });
     }
     
-    @Override
-    public void paintComponent(Graphics g){
-        super.paint(g);
-        Graphics2D g2d = (Graphics2D)g.create();
-        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setFont(font);
-        g2d.setColor(normalBackground);
-        g2d.fillRect(0, 0, getWidth(), getHeight());
-        g2d.setColor(normalForeground);
-    }
+//    @Override
+//    public void paint(Graphics g){
+//        Graphics2D g2d = (Graphics2D)g.create();
+//        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//        g2d.setFont(font);
+//        g2d.setColor(normalBackground);
+//        g2d.fillRect(0, 0, getWidth(), getHeight());
+//        g2d.setColor(normalForeground);
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -191,19 +190,30 @@ public class SamplePanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+
+        jLabel1.setText("jLabel1");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(76, 76, 76)
+                .addComponent(jLabel1)
+                .addContainerGap(181, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(80, 80, 80)
+                .addComponent(jLabel1)
+                .addContainerGap(134, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
