@@ -5,6 +5,7 @@
 package eson.component.table;
 
 import eson.component.EsonSearch;
+import eson.component.util.CustomScrollBarUI;
 import eson.core.util.DataConnection;
 import eson.core.util.ImageRenderer;
 import eson.core.util.LoadingAnimation;
@@ -30,6 +31,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
 import static javax.swing.SwingWorker.StateValue.DONE;
@@ -332,47 +334,20 @@ public class EsonTableHolder extends Exception{
     }
     
     protected void changeScrollSize(int size){
-        try{
-            table.HEADER.setMarginSize(size<=table.SCROLL_MIN_SIZE?(table.VERTICAL_SCROLL_SHOWN?size:0):size);
-            UIManager.put("ScrollBar.width", size);
-            Color BACKGROUND = table.SCROLL_BACKGROUND == null ? table.ROW_BACKGROUNDS[0] : table.SCROLL_BACKGROUND;
-            Color FOREGROUND = table.SCROLL_FOREGROUND == null ? table.ROW_FOREGROUNDS[0] : table.SCROLL_FOREGROUND;
-            UIManager.put("ScrollBar.thumb", table.scroll.getBackground());
-            UIManager.put("ScrollBar.thumbDarkShadow", FOREGROUND);
-            table.scroll.setBackground(BACKGROUND);
-            table.scroll.getVerticalScrollBar().updateUI();
-            table.scroll.getVerticalScrollBar().getParent().setBackground(BACKGROUND);
-            table.scroll.getVerticalScrollBar().setUI(getUpdatedScrollBarUI(FOREGROUND, BACKGROUND));
-            table.scroll.getHorizontalScrollBar().updateUI();
-            table.scroll.getHorizontalScrollBar().getParent().setBackground(BACKGROUND);
-            table.scroll.getHorizontalScrollBar().setUI(getUpdatedScrollBarUI(FOREGROUND, BACKGROUND));
-        }catch(Exception ex){}
+        table.HEADER.setMarginSize(size<=table.SCROLL_MIN_SIZE?(table.VERTICAL_SCROLL_SHOWN?size:0):size);
+        Color BACKGROUND = table.SCROLL_BACKGROUND == null ? table.ROW_BACKGROUNDS[0] : table.SCROLL_BACKGROUND;
+        Color FOREGROUND = table.SCROLL_FOREGROUND == null ? table.ROW_FOREGROUNDS[0] : table.SCROLL_FOREGROUND;
+        table.scroll.setBackground(BACKGROUND);
+        setScrollBarModernUI(table.scroll.getVerticalScrollBar(), FOREGROUND, BACKGROUND, size);
+        setScrollBarModernUI(table.scroll.getHorizontalScrollBar(), FOREGROUND, BACKGROUND, size);
     }
-    
-    protected BasicScrollBarUI getUpdatedScrollBarUI(Color foreground, Color background){ 
-        return new BasicScrollBarUI(){
-            @Override protected void configureScrollBarColors(){ this.thumbColor = foreground; this.trackColor = background; }
-            @Override protected JButton createDecreaseButton(int Orientation){ return getScrollButton(null,background,foreground); }
-            @Override protected JButton createIncreaseButton(int Orientation){ return getScrollButton(null,background,foreground); }
-        };
-    } 
-    
-    protected JButton getScrollButton(ImageIcon icon, Color background, Color foreground){
-        JButton button = new JButton();
-        button.setContentAreaFilled(true);
-        button.setBorderPainted(false);
-        button.setFocusPainted(false);
-        button.setText("O");
-        button.setBackground(background);
-        button.setForeground(foreground);
-        button.addMouseListener(new MouseListener(){
-            @Override public void mouseClicked(MouseEvent e) { }
-            @Override public void mousePressed(MouseEvent e) { button.setBackground(button.getForeground()); button.setForeground(button.getBackground());}
-            @Override public void mouseReleased(MouseEvent e) { button.setBackground(button.getForeground()); button.setForeground(button.getBackground()); }
-            @Override public void mouseEntered(MouseEvent e) { }
-            @Override public void mouseExited(MouseEvent e) { }
-        });
-        return button;
+
+    private void setScrollBarModernUI(JScrollBar sbar, Color foreground, Color background,int size) {
+        sbar.setUI(new CustomScrollBarUI());
+        sbar.setPreferredSize(new Dimension(size, size));
+        sbar.setForeground(foreground);
+        sbar.setBackground(background);
+        sbar.getParent().setBackground(background);
     }
     
     /**GROUP LAYOUT*/
