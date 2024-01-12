@@ -92,6 +92,7 @@ public class EsonBlur extends LayerUI<Component> {
         mOperation = new ConvolveOp(new Kernel(BLUR_VALUE, BLUR_VALUE, blurKernel), ConvolveOp.EDGE_NO_OP, null);
     }
 
+    private boolean loaded = false;
     @Override
     public void paint (Graphics g, JComponent c) {
         int w = c.getWidth();
@@ -103,10 +104,13 @@ public class EsonBlur extends LayerUI<Component> {
         if(mOffscreenImage == null ||  mOffscreenImage.getWidth() != w ||  mOffscreenImage.getHeight() != h) {
             mOffscreenImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         }
-        Graphics2D ig2 = mOffscreenImage.createGraphics();
-        ig2.setClip(g.getClip());   
-        super.paint(ig2, c);
-        ig2.dispose();
+        if(!loaded){
+            Graphics2D ig2 = mOffscreenImage.createGraphics();
+            ig2.setClip(g.getClip());   
+            super.paint(ig2, c);
+            ig2.dispose();
+            loaded = true;
+        }
         Graphics2D g2 = (Graphics2D)g;
         g2.drawImage(mOffscreenImage, mOperation, 0, 0);
         if(BLUR_COLOR!=null){
@@ -140,6 +144,7 @@ public class EsonBlur extends LayerUI<Component> {
     private Component VIEW = null;
     private boolean exitOnHover = false, actionEnabled = false, isBlur = false;
     protected void showBlur(){
+        loaded = false;
         VIEW = null;
         if(CONTAINER.getComponentCount()>0){
             isBlur = true;

@@ -38,7 +38,7 @@ public class EsonTableRow extends JPanel {
     protected List<Integer> COLUMN_WIDTHS = new ArrayList<>();
     protected List<Boolean> RESIZABLE_COLUMNS = new ArrayList<>();
     protected List<Boolean> VISIBLE_COLUMNS = new ArrayList<>();
-    protected List<Integer> COLUMN_ALIGNMENT = new ArrayList<>();
+    protected List<Integer> COLUMN_ALIGNMENT = new ArrayList<>();   
     protected boolean isHeader = false;
     protected EsonTable TABLE = null;
     protected Font FONT = null;

@@ -27,7 +27,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
-import javax.swing.plaf.basic.BasicGraphicsUtils;
 import javax.swing.plaf.basic.ComboPopup;
 
 public class EsonComboUI extends BasicComboBoxUI {
@@ -117,19 +116,21 @@ public class EsonComboUI extends BasicComboBoxUI {
         
         @Override
         protected JList<Object> createList() {
-            JList obj = new JList<Object>( comboBox.getModel() );
-//            Graphics2D g2d = (Graphics2D)g.create();
-//            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//            g2d.setColor(Color.red);
-//            g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
-            
+            JList obj = new JList<Object>( comboBox.getModel()){
+                
+                @Override
+                public void paintComponent(Graphics g){
+                    Graphics2D g2d = (Graphics2D)g.create();
+                    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2d.setColor(Color.red);
+                    g2d.fillRoundRect(0, 0, getWidth(), getHeight(), 15, 15);
+                }
+            };
             obj.setOpaque(false);
             return obj;
         }
         
         private class CustomList extends JList<Object>{
-            
-            
             
         }
 
